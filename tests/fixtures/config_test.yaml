@@ -1,0 +1,29 @@
+project:
+  raw_start: "2019-01-01"
+  raw_end: "2019-12-31"
+  dataset_start: "2019-01-14"
+split:
+  train_end: "2019-06-30"
+  val_end: "2019-08-31"
+  calibration_start: "2019-09-01"
+  calibration_end: "2019-09-30"
+  test_start: "2019-10-01"
+  test_end: "2019-12-31"
+cities:
+  - { name: "Berlin",  lat: 52.52, lon: 13.40, population: 3000000 }
+  - { name: "Hamburg", lat: 53.55, lon: 9.99,  population: 1000000 }
+smard: { base_url: "http://x", filter: 410, region: "DE", resolution: "hour" }
+weather: { base_url: "http://x", hourly_vars: ["temperature_2m"], timezone: "UTC" }
+features:
+  weather_strategy: "persistence"
+  hdd_threshold: 18.0
+  cdd_threshold: 22.0
+  fourier: [ { name: "week", period: 7, harmonics: 1 } ]
+  structural_breaks: { is_covid: { start: "2020-03-15", end: "2020-06-15" } }
+  lags: [1, 7]
+models: { sarimax: { order: [2,1,1], seasonal_order: [1,0,1,7], refit: false, refit_period: 90 } }
+tuning: { n_trials: 5, cv_splits: 2 }
+ensemble: { members: ["SARIMAX", "xgboost", "lightgbm"] }
+uncertainty: { calibration_days: 30, adaptive_gamma: 0.01, adaptive_window: 90 }
+seed: 42
+paths: { raw_dir: "data/raw", processed_dir: "data/processed", results_dir: "results" }

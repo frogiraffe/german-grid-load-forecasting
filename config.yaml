@@ -1,0 +1,104 @@
+project:
+  raw_start: "2019-01-01"
+  raw_end: "2026-08-04"
+  dataset_start: "2019-01-14"
+
+split:
+  train_end: "2023-12-31"
+  val_end: "2025-06-30"
+  calibration_start: "2025-07-01"
+  calibration_end: "2025-12-31"
+  test_start: "2026-01-01"
+  test_end: "2026-08-04"
+
+cities:
+  - { name: "Berlin",    lat: 52.5200, lon: 13.4050, population: 3700000 }
+  - { name: "Hamburg",   lat: 53.5511, lon: 9.9937,  population: 1900000 }
+  - { name: "Munich",    lat: 48.1351, lon: 11.5820, population: 1500000 }
+  - { name: "Cologne",   lat: 50.9375, lon: 6.9603,  population: 1100000 }
+  - { name: "Frankfurt", lat: 50.1109, lon: 8.6821,  population: 770000 }
+
+smard:
+  base_url: "https://www.smard.de/app/chart_data"
+  filter: 410          # Realisierter Stromverbrauch / Netzlast — verified separately
+  region: "DE"
+  resolution: "hour"
+
+weather:
+  base_url: "https://archive-api.open-meteo.com/v1/archive"
+  previous_runs_url: "https://previous-runs-api.open-meteo.com/v1/forecast"
+  operational_start: "2024-01-20"
+  hourly_vars: ["temperature_2m", "wind_speed_10m"]
+  operational_hourly_vars:
+    ["temperature_2m_previous_day1", "wind_speed_10m_previous_day1"]
+  timezone: "Europe/Berlin"
+
+features:
+  # Use archived forecasts issued 24 hours before the target day from 2024 onward.
+  # Earlier rows use the previous day's observation because the archive is unavailable.
+  weather_strategy: "available_day_ahead"
+  hdd_threshold: 18.0
+  cdd_threshold: 22.0
+  fourier:
+    - { name: "week", period: 7,      harmonics: 1 }
+    - { name: "year", period: 365.25, harmonics: 1 }
+  structural_breaks:
+    is_covid:        { start: "2020-03-15", end: "2020-06-15" }
+    is_energy_crisis: { start: "2022-09-01", end: "2023-03-31" }
+  lags: [1, 7]
+  hourly_lags: [24, 168]
+
+models:
+  sarimax:
+    order: [2, 1, 1]
+    seasonal_order: [1, 0, 1, 7]
+    refit: false        # false | true | periodic
+    refit_period: 90
+  xgboost:
+    n_estimators: 425
+    max_depth: 5
+    learning_rate: 0.04133507869002662
+    subsample: 0.7265537839619253
+    colsample_bytree: 0.8845748582218896
+    min_child_weight: 2
+    gamma: 3.2780443858087294
+  lightgbm:
+    n_estimators: 1137
+    max_depth: 5
+    learning_rate: 0.0068141987644542885
+    subsample: 0.8491138046425559
+    subsample_freq: 1
+    colsample_bytree: 0.8139882925367778
+    min_child_samples: 5
+    num_leaves: 18
+  random_forest:
+    n_estimators: 463
+    max_depth: 16
+    min_samples_split: 2
+    min_samples_leaf: 4
+    max_features: 0.9987985103162023
+
+tuning:
+  n_trials: 50
+  cv_splits: 4
+
+ensemble:
+  # Selected on the 2024-2025 validation period, before the July 2026 test.
+  members: ["SARIMAX", "xgboost", "lightgbm"]
+
+uncertainty:
+  calibration_days: 184
+  adaptive_gamma: 0.01
+  adaptive_window: 365
+
+monitoring:
+  rolling_window: 14
+  mape_warning: 5.0
+  coverage_floor: 0.85
+
+seed: 42
+
+paths:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  results_dir: "results"

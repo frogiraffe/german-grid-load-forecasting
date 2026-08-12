@@ -1,0 +1,213 @@
+\documentclass[10.5pt,a4paper]{article}
+
+\usepackage{fontspec}
+\usepackage[a4paper,margin=2.2cm,headheight=15pt]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{xurl}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\definecolor{navy}{HTML}{17324D}
+\definecolor{blue}{HTML}{1F6FEB}
+\definecolor{pale}{HTML}{F4F7FA}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
+\setlength{\parskip}{0.28em}
+\setlength{\parindent}{0pt}
+\setlist{nosep,leftmargin=1.5em}
+\titlespacing*{\section}{0pt}{1.4ex plus .2ex}{0.6ex}
+\titlespacing*{\subsection}{0pt}{1.0ex plus .2ex}{0.4ex}
+\renewcommand{\arraystretch}{1.18}
+\raggedbottom
+\input{generated_results}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{navy}{German Grid-Load Forecasting}}
+\rhead{\textcolor{navy}{Technical Report}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\newcommand{\callout}[2]{%
+  \begin{center}
+  \colorbox{pale}{\parbox{0.92\textwidth}{\textbf{\textcolor{navy}{#1}}\quad #2}}
+  \end{center}
+}
+\newcommand{\metric}[2]{%
+  \begin{minipage}[t]{0.23\textwidth}
+  \centering
+  {\Large\bfseries\textcolor{blue}{#1}}\par
+  \small #2
+  \end{minipage}
+}
+
+\begin{document}
+
+\begin{titlepage}
+\color{navy}
+\vspace*{1.2cm}
+{\Large\textbf{TECHNICAL REPORT}}\par
+\vspace{0.6cm}
+{\fontsize{30}{36}\selectfont\bfseries German Grid-Load Forecasting\par}
+\vspace{0.5cm}
+{\Large Daily and hourly day-ahead forecasts}\par
+\vspace{1.2cm}
+\colorbox{pale}{\parbox{0.88\textwidth}{
+The system combines a daily forecast and an hourly profile. It uses
+hierarchical reconciliation and conformal prediction intervals. MLflow stores
+the complete reconciled model.
+}}
+\vfill
+\begin{tabular}{@{}ll}
+\textbf{Author} & chiki · \href{mailto:work@chiki.dev}{work@chiki.dev}\\
+\end{tabular}
+\vspace{0.8cm}
+\end{titlepage}
+
+\section*{Summary}
+
+The system forecasts realized German electricity grid load. It produces daily
+and hourly day-ahead forecasts.
+
+% loadfc:generated-start
+Release results are generated from the checked source revision.
+% loadfc:generated-end
+
+\section{Data and evaluation}
+
+SMARD supplies realized grid-load data. Open-Meteo supplies archived weather
+forecasts.
+
+The target is realized electricity consumption in MW. Residual load is outside
+the report scope.
+
+Weather features use forecasts from 24 hours before valid time. Earlier data
+uses previous-day observed weather.
+
+The configured chronological stages are training, validation, calibration, and
+retrospective final. Validation selects models before later evidence is inspected.
+
+\section{Forecast architecture}
+
+\begin{center}
+\setlength{\fboxsep}{8pt}
+\begin{tabular}{c@{\hspace{0.35em}$\longrightarrow$\hspace{0.35em}}c@{\hspace{0.35em}$\longrightarrow$\hspace{0.35em}}c}
+\fbox{\parbox{0.24\textwidth}{\centering\textbf{Inputs}\\load\\weather}}
+&
+\fbox{\parbox{0.24\textwidth}{\centering\textbf{Models}\\hourly profile\\daily mean}}
+&
+\fbox{\parbox{0.24\textwidth}{\centering\textbf{Outputs}\\reconciliation\\intervals · MLflow}}
+\end{tabular}
+\end{center}
+
+The hourly evaluation compares residual hybrid, direct LightGBM, and direct
+Ridge. Each model predicts valid hours directly.
+
+The features include horizon, lag-24, lag-168, calendar, weather, and Fourier
+terms. Direct prediction prevents recursive error propagation.
+
+Validation MAE selects the daily anchor. The final model uses only data before
+calibration.
+
+\section{Reconciliation}
+
+For local day $d$ and hour $h$, the system uses:
+
+\[
+\hat{y}^{rec}_{d,h}
+=
+\hat{y}^{hourly}_{d,h}
+\times
+\frac{\hat{y}^{daily}_{d}}
+{\frac{1}{|H_d|}\sum_{j\in H_d}\hat{y}^{hourly}_{d,j}}.
+\]
+
+The operation keeps the relative hourly shape. The reconciled mean equals the
+daily forecast.
+
+The code supports complete local days with 23, 24, or 25 hours. It rejects
+invalid predictions and incomplete days.
+
+The generated release evidence reports raw and reconciled MAE from the same
+retrospective-final forecast rows.
+
+\section{Model selection}
+
+The release keeps the validation-selected model. Later candidate comparisons
+are retrospective evidence and do not change that selection.
+
+The paired bootstrap uses one MAE difference for each local day and resamples
+the paired day blocks. The generated release evidence reports its result.
+
+\section{Prediction intervals}
+
+The point, daily, and quantile models use data before calibration. The models
+stay fixed during calibration and retrospective-final evaluation.
+
+Reconciliation occurs before score calculation. Both interval methods use the
+same reconciled point forecasts.
+
+The current implementation keeps all models frozen. Coverage is empirical; adaptive intervals are prequential monitoring without an unconditional time-series guarantee.
+
+\section{Controls}
+
+\subsection{MLflow}
+
+\texttt{ReconciledForecaster} contains both fitted models and both feature
+schemas. It also contains the reconciliation operation.
+
+Artifact replay is checked against the persisted evaluation predictions.
+
+\subsection{Data validation}
+
+\begin{tabularx}{\textwidth}{>{\bfseries}l X}
+Load & Values must be finite and positive.\\
+Weather & Values must be within configured physical ranges.\\
+Time & UTC timestamps must be unique, complete, and on the hourly grid.\\
+Telemetry & Prediction and interval indexes must match before the join.\\
+\end{tabularx}
+
+\subsection{Datetime resolution}
+
+Raw \texttt{.asi8} values depend on the pandas storage unit. The feature code
+uses \texttt{Timedelta(hours=1)} to calculate elapsed hours.
+
+A regression test uses \texttt{datetime64[us]}. It verifies the time scale and
+the weekly Fourier phase.
+
+\section{Verification and limits}
+
+\begin{verbatim}
+uv run ruff check src scripts tests
+uv run mypy src
+uv run pytest --cov=loadfc --cov-report=term-missing --cov-fail-under=80
+uv run python scripts/validate_results.py
+\end{verbatim}
+
+Five cities represent national weather exposure. Distribution shift can change
+conformal coverage.
+
+A production service requires scheduling, access control, service-level
+objectives, and rollback rules.
+
+\section*{References}
+
+\begin{itemize}
+\footnotesize
+  \item Bundesnetzagentur, SMARD: \url{https://www.smard.de/en}
+  \item Open-Meteo Previous Runs API:
+        \url{https://open-meteo.com/en/docs/previous-runs-api}
+  \item Hyndman et al., ``Optimal Combination Forecasts for Hierarchical Time Series''.
+  \item Romano et al., ``Conformalized Quantile Regression''.
+  \item Gibbs and Candès, ``Adaptive Conformal Inference Under Distribution Shift''.
+  \item Ke et al., ``LightGBM: A Highly Efficient Gradient Boosting Decision Tree''.
+\end{itemize}
+
+\end{document}

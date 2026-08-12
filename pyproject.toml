@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loadfc"
+version = "1.1.0"
+description = "German daily grid-load forecasting with forecast-origin weather"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+license = "MIT"
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24,<2.5",
+    "requests>=2.31",
+    "PyYAML>=6.0",
+    "pyarrow>=14.0",
+    "statsmodels>=0.14",
+    "scikit-learn>=1.3",
+    "xgboost-cpu>=3.0; platform_machine == 'x86_64' and (sys_platform == 'linux' or sys_platform == 'win32')",
+    "xgboost>=3.0; platform_machine != 'x86_64' or (sys_platform != 'linux' and sys_platform != 'win32')",
+    "lightgbm>=4.0",
+    "optuna>=3.4",
+    "holidays>=0.40",
+    "matplotlib>=3.7",
+    "seaborn>=0.13",
+    "mlflow>=3.0,<4",
+    "pandera[pandas]>=0.32,<1",
+]
+
+[project.urls]
+Homepage = "https://github.com/frogiraffe/german-grid-load-forecasting"
+Demo = "https://frogiraffe.github.io/german-grid-load-forecasting/"
+Repository = "https://github.com/frogiraffe/german-grid-load-forecasting"
+
+[project.optional-dependencies]
+dev = ["ruff", "mypy", "pytest", "pytest-cov"]
+explain = ["shap>=0.52", "numba>=0.62,<0.63"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]  # long lines are tolerated (tables, prose in docstrings)
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+disallow_untyped_defs = false
+check_untyped_defs = false
+warn_unused_ignores = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+    "ignore:X does not have valid feature names:UserWarning",
+]

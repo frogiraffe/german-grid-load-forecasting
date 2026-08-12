@@ -1,0 +1,64 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22.13.0"
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+      - uses: astral-sh/setup-uv@v9.0.0
+      - name: Install
+        run: uv sync --extra dev
+      - name: Install dashboard dependencies
+        run: npm ci --prefix dashboard
+      - name: Lint (ruff)
+        run: uv run ruff check src scripts tests
+      - name: Type-check (mypy)
+        run: uv run mypy src
+      - name: Test with coverage
+        run: uv run pytest --cov=loadfc --cov-report=term-missing --cov-fail-under=80
+      - name: Validate bounded release artifacts
+        run: >-
+          uv run pytest -q
+          tests/test_render_report_data.py
+          tests/test_release_integration.py
+          tests/test_build_dashboard_data.py
+          tests/test_validate_results.py
+      - name: Test and build dashboard from bounded fixture
+        run: |
+          contract_file="$RUNNER_TEMP/dashboard-release-contract.json"
+          generated_file="$GITHUB_WORKSPACE/dashboard/src/generated/release.json"
+          trap 'rm -f "$contract_file" "$generated_file"' EXIT
+          mkdir -p "$(dirname "$contract_file")"
+          DASHBOARD_CONTRACT_OUT="$contract_file" \
+            uv run pytest -q tests/test_build_dashboard_data.py::test_emit_frontend_release_contract
+          DASHBOARD_CONTRACT_FIXTURE="$contract_file" npm --prefix dashboard test -- --run
+          mkdir -p "$(dirname "$generated_file")"
+          cp "$contract_file" "$generated_file"
+          npm --prefix dashboard run build
+      - name: Verify dependency lock
+        run: uv lock --check
+
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Tectonic
+        run: |
+          curl -fsSL \
+            https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.16.9/tectonic-0.16.9-x86_64-unknown-linux-musl.tar.gz \
+            | tar xz
+          echo "$PWD" >> "$GITHUB_PATH"
+      - name: Build English report PDF
+        run: tectonic -X compile report/technical-report-en.tex
