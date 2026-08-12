@@ -101,9 +101,12 @@ def test_managed_presentation_validator_rejects_drift_and_unqualified_claims(
     if mutation == "value":
         text = text.replace("MAPE 1.867%", "MAPE 9.999%")
     elif mutation == "model":
-        text = text.replace("Ensemble achieved", "LightGBM achieved")
+        text = text.replace("Daily forecast:** Ensemble", "Daily forecast:** LightGBM")
     elif mutation == "role":
-        text = text.replace("Retrospective; previously inspected", "Prospective holdout")
+        text = text.replace(
+            "The final period was already examined",
+            "The final period is a prospective holdout",
+        )
     elif mutation == "sample_size":
         text = text.replace("n=216", "n=999", 1)
     elif mutation == "bundle_missing":

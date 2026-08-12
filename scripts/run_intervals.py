@@ -26,7 +26,6 @@ from loadfc.evaluation.conformal import (
 )
 from loadfc.evaluation.protocol import assert_compatible_artifacts, protocol_fingerprint
 from loadfc.evaluation.provenance import artifact_results_root
-from loadfc.viz import plots
 
 MODELS = [
     "SARIMAX",
@@ -116,17 +115,14 @@ def main() -> None:
     preds_dir = results_dir / "predictions"
     calibration_dir = results_dir / "calibration_predictions"
     metrics_dir = results_dir / "metrics"
-    figs = results_dir / "figs"
     interval_dir = results_dir / "interval_predictions"
     metrics_dir.mkdir(parents=True, exist_ok=True)
-    figs.mkdir(parents=True, exist_ok=True)
     interval_dir.mkdir(parents=True, exist_ok=True)
     calibration_days = args.calib or int(cfg.uncertainty["calibration_days"])
     gamma = float(cfg.uncertainty["adaptive_gamma"])
     window = int(cfg.uncertainty["adaptive_window"])
 
     rows: list[dict] = []
-    fig_done = False
     for name in MODELS:
         calibration = _read_prediction_csv(calibration_dir / f"{name}.csv").iloc[
             -calibration_days:
@@ -183,16 +179,6 @@ def main() -> None:
                     "n": evidence["n"],
                 }
                 rows.append(row)
-            if name == "SARIMAX" and label == "95%" and not fig_done:
-                plots.prediction_intervals(
-                    test["actual"],
-                    test["forecast"],
-                    adaptive_lower,
-                    adaptive_upper,
-                    "SARIMAX adaptive conformal",
-                    figs / "13_prediction_intervals.png",
-                )
-                fig_done = True
         # Keep canonical precision: actual/forecast must stay byte-identical to the
         # matching predictions/<model>.csv rows that downstream evidence compares against.
         interval_predictions.to_csv(interval_dir / f"{name}.csv")
@@ -201,7 +187,6 @@ def main() -> None:
     out.to_csv(metrics_dir / "interval_coverage.csv", index=False)
     print(out.to_string(index=False))
     print("\nsaved coverage to", metrics_dir / "interval_coverage.csv")
-    print("saved figure to", figs / "13_prediction_intervals.png")
 
 
 if __name__ == "__main__":

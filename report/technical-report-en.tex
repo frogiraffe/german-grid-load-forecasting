@@ -61,8 +61,8 @@
 \vspace{1.2cm}
 \colorbox{pale}{\parbox{0.88\textwidth}{
 The system combines a daily forecast and an hourly profile. It uses
-hierarchical reconciliation and conformal prediction intervals. MLflow stores
-the complete reconciled model.
+hierarchical reconciliation and conformal prediction intervals. Release
+manifests bind the reported evidence to the evaluated source revision.
 }}
 \vfill
 \begin{tabular}{@{}ll}
@@ -77,7 +77,16 @@ The system forecasts realized German electricity grid load. It produces daily
 and hourly day-ahead forecasts.
 
 % loadfc:generated-start
-Release results are generated from the checked source revision.
+\subsection*{Release results}
+\begin{itemize}
+  \item Period: 01 Jan 2026 to 04 Aug 2026; n=216 days.
+  \item Daily forecast: Ensemble. MAE 1003.6 MW, MAPE 1.867\%, and MASE 0.445. Reference models: Naive (t-1) MAPE 7.025\% (n=216); Seasonal naive (t-7) MAPE 5.575\% (n=216).
+  \item Hourly forecast: Residual hybrid. Daily-total alignment reduced MAE from 1627.6 MW to 1557.7 MW (-4.30\%). The result contains n=5183 hourly values. The daily model was LightGBM.
+  \item Model comparison: Validation MAE was 1465.3 MW for Residual hybrid and 1471.0 MW for Direct LightGBM. The paired difference on the final data was +1.9 MW. Its 95\% range was [-48.8, 52.1] MW across 216 days. This range includes zero, so the data do not show a clear winner.
+  \item Uncertainty ranges: Symmetric 90\%: target 90\%, measured coverage 84.89\%, mean width 5573.1 MW, interval score 8831.6 MW, n=5183; Adaptive 90\%: target 90\%, measured coverage 89.95\%, mean width 6529.3 MW, interval score 8250.5 MW, n=5183; CQR 90\%: target 90\%, measured coverage 86.51\%, mean width 7550.2 MW, interval score 10567.7 MW, n=5183.
+  \item Release check: source 555cfd0381a880ca22264e98fd94aa4004efec7e; daily protocol b6f14a50c9327083ebfb68402a7348d02a6c38bfe8a1bc8d5dc6ceb33315bba3; hourly protocol 2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7; bundle 847a190df672fac4c67369db822fe82767bdbe1a1ca3e6ada2a3787568fb2e69.
+  \item Scope: The final period was already examined. These results describe this data period and do not state future accuracy.
+\end{itemize}
 % loadfc:generated-end
 
 \section{Data and evaluation}
@@ -103,7 +112,7 @@ retrospective final. Validation selects models before later evidence is inspecte
 &
 \fbox{\parbox{0.24\textwidth}{\centering\textbf{Models}\\hourly profile\\daily mean}}
 &
-\fbox{\parbox{0.24\textwidth}{\centering\textbf{Outputs}\\reconciliation\\intervals · MLflow}}
+\fbox{\parbox{0.24\textwidth}{\centering\textbf{Outputs}\\reconciliation\\intervals · report}}
 \end{tabular}
 \end{center}
 
@@ -158,20 +167,13 @@ The current implementation keeps all models frozen. Coverage is empirical; adapt
 
 \section{Controls}
 
-\subsection{MLflow}
-
-\texttt{ReconciledForecaster} contains both fitted models and both feature
-schemas. It also contains the reconciliation operation.
-
-Artifact replay is checked against the persisted evaluation predictions.
-
 \subsection{Data validation}
 
 \begin{tabularx}{\textwidth}{>{\bfseries}l X}
 Load & Values must be finite and positive.\\
 Weather & Values must be within configured physical ranges.\\
 Time & UTC timestamps must be unique, complete, and on the hourly grid.\\
-Telemetry & Prediction and interval indexes must match before the join.\\
+Evaluation & Prediction and interval indexes must match before the join.\\
 \end{tabularx}
 
 \subsection{Datetime resolution}

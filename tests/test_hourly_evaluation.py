@@ -91,6 +91,18 @@ def test_reconciliation_rejects_missing_daily_anchor():
         )
 
 
+def test_reconciliation_rejects_nonfinite_hourly_prediction():
+    predictions = _h24_predictions()
+    predictions.iloc[0, predictions.columns.get_loc("prediction")] = np.nan
+
+    with pytest.raises(ValueError, match="hourly predictions must be finite"):
+        reconcile_to_daily_means(
+            predictions,
+            pd.Series([200.0], index=[pd.Timestamp("2024-01-02")]),
+            horizon=24,
+        )
+
+
 def test_reconciliation_rejects_incomplete_local_day():
     with pytest.raises(ValueError, match="incomplete local days"):
         reconcile_to_daily_means(

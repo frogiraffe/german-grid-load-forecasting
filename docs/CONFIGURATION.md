@@ -1,293 +1,239 @@
 # Configuration
 
-The project is configured by a single YAML file, `config.yaml` at the repository
-root. It is loaded by `Config.from_yaml()` in `src/loadfc/config.py`, which parses
-the file into a frozen `Config` dataclass and runs a validation pass
-(`Config.validate()`) that raises `ValueError` on invalid values.
+The project uses one YAML file, [`config.yaml`](../config.yaml). `Config.from_yaml()`
+in `src/loadfc/config.py` parses it into frozen dataclasses, resolves paths relative
+to the YAML file, and calls `Config.validate()`.
 
-All paths in `paths` are resolved relative to the directory that contains the
-config file (the repository root for the default `config.yaml`), not relative to
-the current working directory (`Config.path()`, `Config.root`).
+## Config file format
 
-## File location and loading
-
-| Item | Value |
-| --- | --- |
-| File | `config.yaml` (repository root) |
-| Loader | `Config.from_yaml(path)` in `src/loadfc/config.py` |
-| Alternate configs | any script accepts `--config <path>` (default `config.yaml`) |
-| Data model | frozen dataclasses: `Config`, `SplitConfig`, `City` |
-
-To run with an alternate config, pass `--config` to any script, for example:
+Run the full release pipeline with the repository configuration:
 
 ```bash
-python scripts/run_pipeline.py --config experiments/experiment-a.yaml
+uv run python scripts/run_pipeline.py --config config.yaml
 ```
 
-All scripts in `scripts/` accept `--config` with the same default:
-`run_fetch.py`, `run_features.py`, `run_pipeline.py`, `run_evaluate.py`,
-`run_intervals.py`, `run_hourly.py`, `run_analysis.py`, `run_plots.py`,
-`run_tune.py`, `run_shap.py`, `run_telemetry.py`, `run_error_analysis.py`,
-`write_run_summary.py`, `validate_results.py`, `render_report_data.py`.
+To use another configuration, pass its path through `--config`. Relative paths
+inside that file are resolved from the file's directory, not from the shell's
+current directory:
 
-## Top-level sections
+```bash
+uv run python scripts/run_pipeline.py --config experiments/experiment-a.yaml
+```
 
-| Section | Required | Content |
-| --- | --- | --- |
-| `project` | yes | date windows for raw and dataset data |
-| `split` | yes | train/validation/calibration/test boundaries |
-| `cities` | yes | cities aggregated into the national forecast |
-| `smard` | yes | SMARD load-data source |
-| `weather` | yes | Open-Meteo weather source |
-| `features` | yes | feature engineering settings |
-| `models` | yes | model hyperparameters (frozen from tuning) |
-| `tuning` | yes | Optuna tuning budget |
-| `ensemble` | optional | ensemble members (default `["SARIMAX", "xgboost", "lightgbm"]`) |
-| `uncertainty` | optional | conformal calibration settings |
-| `monitoring` | optional | drift/quality alert thresholds |
-| `seed` | yes | global random seed |
-| `paths` | yes | output directories |
+Every current script in `scripts/` accepts `--config` and defaults to
+`config.yaml`: `build_dashboard_data.py`, `render_report_data.py`,
+`run_analysis.py`, `run_comparison.py`, `run_error_analysis.py`,
+`run_evaluate.py`, `run_features.py`, `run_fetch.py`, `run_hourly.py`,
+`run_intervals.py`, `run_pipeline.py`, `run_shap.py`, `validate_results.py`, and
+`write_run_summary.py`.
 
-## `project`
+A minimal shape is:
 
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `raw_start` | date | `2019-01-01` | earliest date of raw fetched data |
-| `raw_end` | date | `2026-08-04` | latest date of raw fetched data; `split.test_end` must not exceed it |
-| `dataset_start` | date | `2019-01-14` | start of the cleaned dataset (after warm-up rows are dropped) |
+```yaml
+project:
+  raw_start: "2019-01-01"
+  raw_end: "2026-08-04"
+  dataset_start: "2019-01-14"
+split:
+  train_end: "2023-12-31"
+  val_end: "2025-06-30"
+  calibration_start: "2025-07-01"
+  calibration_end: "2025-12-31"
+  test_start: "2026-01-01"
+  test_end: "2026-08-04"
+cities:
+  - {name: "Berlin", lat: 52.52, lon: 13.405, population: 3700000}
+smard: {base_url: "https://www.smard.de/app/chart_data", filter: 410, region: "DE", resolution: "hour"}
+weather:
+  base_url: "https://archive-api.open-meteo.com/v1/archive"
+  previous_runs_url: "https://previous-runs-api.open-meteo.com/v1/forecast"
+  operational_start: "2024-01-20"
+  hourly_vars: ["temperature_2m", "wind_speed_10m"]
+  operational_hourly_vars: ["temperature_2m_previous_day1", "wind_speed_10m_previous_day1"]
+  timezone: "Europe/Berlin"
+features:
+  weather_strategy: "available_day_ahead"
+  hdd_threshold: 18.0
+  cdd_threshold: 22.0
+  fourier: [{name: "week", period: 7, harmonics: 1}]
+  structural_breaks: {}
+  lags: [1, 7]
+  hourly_lags: [24, 168]
+models:
+  sarimax: {order: [2, 1, 1], seasonal_order: [1, 0, 1, 7], refit: false}
+  xgboost: {}
+  lightgbm: {}
+  random_forest: {}
+ensemble: {members: ["SARIMAX", "xgboost", "lightgbm"]}
+uncertainty: {calibration_days: 184, adaptive_gamma: 0.01, adaptive_window: 365}
+seed: 42
+paths: {raw_dir: "data/raw", processed_dir: "data/processed", results_dir: "results"}
+```
 
-## `split`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `train_end` | date | `2023-12-31` | end of the training window (model fitting) |
-| `val_end` | date | `2025-06-30` | end of the validation window (model/architecture selection) |
-| `calibration_start` | date | `2025-07-01` | start of the conformal calibration window |
-| `calibration_end` | date | `2025-12-31` | end of the calibration window |
-| `test_start` | date | `2026-01-01` | start of the held-out test window |
-| `test_end` | date | `2026-08-04` | end of the test window; the last day of available raw data |
-
-Validation enforces that the eight dates are strictly chronological:
-`raw_start <= dataset_start <= train_end <= val_end <= calibration_start <=
-calibration_end <= test_start <= test_end`, and that `test_end <= raw_end`.
-
-## `cities`
-
-List of cities whose loads are aggregated (population-weighted) into the
-national forecast. Each entry:
-
-| Key | Type | Example value | Effect |
-| --- | --- | --- | --- |
-| `name` | string | `Berlin` | city identifier |
-| `lat` | float | `52.5200` | latitude for weather fetch |
-| `lon` | float | `13.4050` | longitude for weather fetch |
-| `population` | int | `3700000` | weight in `Config.city_weights()` (share of total population) |
-
-Current cities: Berlin (52.5200, 13.4050, 3.7M), Hamburg (53.5511, 9.9937, 1.9M),
-Munich (48.1351, 11.5820, 1.5M), Cologne (50.9375, 6.9603, 1.1M), Frankfurt
-(50.1109, 8.6821, 770k).
-
-Validation: at least one city required; all populations must be positive.
-
-## `smard`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `base_url` | string | `https://www.smard.de/app/chart_data` | SMARD chart-data endpoint for historical load |
-| `filter` | int | `410` | SMARD filter id for real-time electricity consumption / grid load |
-| `region` | string | `DE` | SMARD region code (Germany) |
-| `resolution` | string | `hour` | time resolution of the fetched series |
-
-## `weather`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `base_url` | string | `https://archive-api.open-meteo.com/v1/archive` | Open-Meteo archive endpoint (historical observations) |
-| `previous_runs_url` | string | `https://previous-runs-api.open-meteo.com/v1/forecast` | Open-Meteo previous-runs endpoint (archived forecasts) |
-| `operational_start` | date | `2024-01-20` | from this date onward, archived day-ahead forecasts are used as weather features |
-| `hourly_vars` | list | `["temperature_2m", "wind_speed_10m"]` | observed hourly variables fetched from the archive |
-| `operational_hourly_vars` | list | `["temperature_2m_previous_day1", "wind_speed_10m_previous_day1"]` | forecast variables fetched from previous-runs for the operational period |
-| `timezone` | string | `Europe/Berlin` | timezone used for all date handling |
-
-## `features`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `weather_strategy` | string | `available_day_ahead` | how weather enters features: `persistence`, `oracle`, or `available_day_ahead` (archived forecast issued 24 h before the target day from 2024 onward; earlier rows use the previous day's observation, see `src/loadfc/data/build_dataset.py`). Default when key absent: `persistence` |
-| `hdd_threshold` | float | `18.0` | heating-degree-day base: `HDD = max(0, 18.0 - T)` (`src/loadfc/features/weather_features.py`) |
-| `cdd_threshold` | float | `22.0` | cooling-degree-day base: `CDD = max(0, T - 22.0)` |
-| `fourier` | list | see below | Fourier seasonal terms added as features |
-| `structural_breaks` | map | see below | one-hot window flags for regime changes |
-| `lags` | list | `[1, 7]` | daily lag steps added as features |
-| `hourly_lags` | list | `[24, 168]` | hourly lag steps (24 h and 168 h) for the hourly model. Default when key absent: `[24, 168]` |
-
-`fourier` entries (each: `name`, `period`, `harmonics`):
-
-| name | period | harmonics | Effect |
-| --- | --- | --- | --- |
-| `week` | `7` | `1` | weekly seasonality (sin/cos pair) |
-| `year` | `365.25` | `1` | annual seasonality (sin/cos pair) |
-
-`structural_breaks` flags:
-
-| Key | start | end | Effect |
-| --- | --- | --- | --- |
-| `is_covid` | `2020-03-15` | `2020-06-15` | 1 in the COVID lockdown window, else 0 |
-| `is_energy_crisis` | `2022-09-01` | `2023-03-31` | 1 in the energy-crisis window, else 0 |
-
-Validation: `weather_strategy` must be one of `persistence`, `oracle`,
-`available_day_ahead`, otherwise `ValueError`.
-
-## `models`
-
-Hyperparameters for the four model families. The tree-model values come from
-Optuna tuning and are frozen in `config.yaml` (see `tuning` below). Scripts
-apply `cfg.seed` as `random_state` when a model accepts it.
-
-### `models.sarimax`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `order` | list | `[2, 1, 1]` | SARIMAX `(p, d, q)` order |
-| `seasonal_order` | list | `[1, 0, 1, 7]` | SARIMAX seasonal `(P, D, Q, s)` order with weekly seasonality |
-| `refit` | string/bool | `false` | refit strategy: `false`, `true`, or `periodic` (see `src/loadfc/models/sarimax.py`) |
-| `refit_period` | int | `90` | days between refits when `refit: periodic`; default `90` when absent |
-
-### `models.xgboost`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `n_estimators` | int | `425` | number of boosting rounds |
-| `max_depth` | int | `5` | maximum tree depth |
-| `learning_rate` | float | `0.04133507869002662` | shrinkage per boosting round |
-| `subsample` | float | `0.7265537839619253` | row sampling ratio per round |
-| `colsample_bytree` | float | `0.8845748582218896` | column sampling ratio per tree |
-| `min_child_weight` | int | `2` | minimum sum of instance weights in a child |
-| `gamma` | float | `3.2780443858087294` | minimum loss reduction for a split |
-
-### `models.lightgbm`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `n_estimators` | int | `1137` | number of boosting rounds |
-| `max_depth` | int | `5` | maximum tree depth |
-| `learning_rate` | float | `0.0068141987644542885` | shrinkage per boosting round |
-| `subsample` | float | `0.8491138046425559` | row sampling ratio per round |
-| `subsample_freq` | int | `1` | subsample every N rounds (1 = every round) |
-| `colsample_bytree` | float | `0.8139882925367778` | column sampling ratio per tree |
-| `min_child_samples` | int | `5` | minimum samples per leaf |
-| `num_leaves` | int | `18` | maximum number of leaves per tree |
-
-### `models.random_forest`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `n_estimators` | int | `463` | number of trees |
-| `max_depth` | int | `16` | maximum tree depth |
-| `min_samples_split` | int | `2` | minimum samples to split a node |
-| `min_samples_leaf` | int | `4` | minimum samples per leaf |
-| `max_features` | float | `0.9987985103162023` | fraction of features considered per split |
-
-## `tuning`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `n_trials` | int | `50` | Optuna trials per model in `scripts/run_tune.py` |
-| `cv_splits` | int | `4` | cross-validation folds for tuning evaluation |
-
-Tuning results are written to `results/tuning/best_params.json`; `config.yaml`
-is never overwritten by `run_tune.py` — values must be copied in by hand to
-adopt them (`scripts/run_tune.py`).
-
-## `ensemble`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `members` | list | `["SARIMAX", "xgboost", "lightgbm"]` | models combined into the ensemble forecast; selected on the 2024-2025 validation period |
-
-Default when key absent: `["SARIMAX", "xgboost", "lightgbm"]`. Validation:
-`members` must not be empty.
-
-## `uncertainty`
-
-| Key | Type | Current value | Default (key absent) | Effect |
-| --- | --- | --- | --- | --- |
-| `calibration_days` | int | `184` | `181` | trailing days of the calibration window used for conformal scores (`scripts/run_intervals.py`, overridable with `--calib`) |
-| `adaptive_gamma` | float | `0.01` | `0.01` | smoothing factor for adaptive conformal adjustment; must satisfy `0 < gamma < 1` |
-| `adaptive_window` | int | `365` | `365` | trailing window (days) over which the adaptive factor is estimated; must be >= 1 |
-
-## `monitoring`
-
-| Key | Type | Current value | Default (key absent) | Effect |
-| --- | --- | --- | --- | --- |
-| `rolling_window` | int | `14` | `14` | trailing days for rolling MAPE and coverage in telemetry; must be >= 2 |
-| `mape_warning` | float | `5.0` | `5.0` | rolling MAPE above this (percent) raises a `mape_alert`; must be > 0 |
-| `coverage_floor` | float | `0.85` | `0.85` | rolling interval coverage below this raises a `coverage_alert`; must satisfy `0 < floor < 1` |
-
-Alerts are computed in `src/loadfc/evaluation/telemetry.py`.
-
-## `seed`
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `seed` | int | `42` | global random seed; passed to Optuna trials (`run_tune.py`) and applied as `random_state` for tree models (`run_evaluate.py`, `run_hourly.py`, `run_shap.py`) |
-
-## `paths`
-
-Relative to the config file's directory. Resolved via `Config.path(key)`.
-
-| Key | Type | Current value | Effect |
-| --- | --- | --- | --- |
-| `raw_dir` | string | `data/raw` | downloaded raw SMARD/weather data |
-| `processed_dir` | string | `data/processed` | cleaned, feature-engineered datasets |
-| `results_dir` | string | `results` | evaluation output, plots, tuning artifacts |
-
-## MLflow tracking
-
-There is no `mlflow` section in `config.yaml`. Tracking is configured in
-`src/loadfc/tracking.py`:
-
-- default tracking/registry URI: `sqlite:///<repo-root>/mlflow.db`
-  (`local_tracking_uri()`)
-- artifact store: `<repo-root>/mlartifacts`
-- both can be overridden only in code via the `tracking_uri` argument of
-  `track_sklearn_run()`; there is no environment-variable or config-file
-  override
-- `GITHUB_SHA` (if set) is used as the tracked source revision instead of the
-  local `git rev-parse HEAD`
+The empty model maps above only illustrate the schema. The shipped release uses
+the concrete model parameters documented below.
 
 ## Environment variables
 
-There is no `.env` file, `.env.example`, or dotenv loading anywhere in the
-repository. The only environment variable read by the codebase is `GITHUB_SHA`
-(in `src/loadfc/tracking.py`, optional).
+The application does not use dotenv files and needs no secrets for the public
+data sources in `config.yaml`.
 
-## Validation behavior (summary)
+| Variable | Required | Default | Description |
+| --- | --- | --- | --- |
+| `GITHUB_SHA` | No | current `git rev-parse HEAD` result | Overrides the source revision recorded in release provenance when CI supplies it. |
 
-`Config.validate()` raises `ValueError` with the following messages on invalid
-configuration:
+`SOURCE_DATE_EPOCH=0` is set internally by `run_pipeline.py` while compiling the
+report; users do not need to configure it.
 
-| Rule | Error message |
+## Settings reference
+
+### `project` and `split`
+
+| Key | Required | Current value | Purpose |
+| --- | --- | --- | --- |
+| `project.raw_start` | Yes | `2019-01-01` | First date fetched from the raw providers. |
+| `project.raw_end` | Yes | `2026-08-04` | Last raw-data date. |
+| `project.dataset_start` | Yes | `2019-01-14` | First retained daily or local-calendar hourly date. |
+| `split.train_end` | Yes | `2023-12-31` | Last training date. |
+| `split.val_end` | Yes | `2025-06-30` | Last validation/model-selection date. |
+| `split.calibration_start` | Yes | `2025-07-01` | First conformal-calibration date. |
+| `split.calibration_end` | Yes | `2025-12-31` | Last conformal-calibration date. |
+| `split.test_start` | Yes | `2026-01-01` | First retrospective final-evaluation date. |
+| `split.test_end` | Yes | `2026-08-04` | Last retrospective final-evaluation date. |
+
+Dates use `YYYY-MM-DD`. Validation requires
+`raw_start <= dataset_start <= train_end <= val_end <= calibration_start <=
+calibration_end <= test_start <= test_end` and also requires
+`split.test_end <= project.raw_end`.
+
+### `cities`
+
+`cities` must contain at least one entry. Weather series are fetched per city
+and combined using `population / total_population` from `Config.city_weights()`.
+
+| Entry key | Required | Type | Purpose |
+| --- | --- | --- | --- |
+| `name` | Yes | string | City identifier used in fetched frames. |
+| `lat` | Yes | float | Weather API latitude. |
+| `lon` | Yes | float | Weather API longitude. |
+| `population` | Yes | positive integer | Population weight for national weather aggregation. |
+
+The shipped configuration contains Berlin, Hamburg, Munich, Cologne, and
+Frankfurt.
+
+### `smard`
+
+`src/loadfc/data/smard.py` uses all four values to construct SMARD index and
+chunk URLs.
+
+| Key | Required | Current value | Purpose |
+| --- | --- | --- | --- |
+| `base_url` | Yes | `https://www.smard.de/app/chart_data` | Base URL for chart-data requests. |
+| `filter` | Yes | `410` | Filter identifier inserted into request paths. |
+| `region` | Yes | `DE` | Region inserted into request paths. |
+| `resolution` | Yes | `hour` | Resolution inserted into index and chunk filenames. |
+
+### `weather`
+
+| Key | Required | Current value | Purpose |
+| --- | --- | --- | --- |
+| `base_url` | Yes | `https://archive-api.open-meteo.com/v1/archive` | Historical weather request endpoint. |
+| `previous_runs_url` | For `available_day_ahead` | `https://previous-runs-api.open-meteo.com/v1/forecast` | Archived forecast request endpoint. |
+| `operational_start` | For `available_day_ahead` | `2024-01-20` | First target date requested from the previous-runs archive. |
+| `hourly_vars` | Yes | `temperature_2m`, `wind_speed_10m` | Variables requested for observed weather. |
+| `operational_hourly_vars` | For `available_day_ahead` | `temperature_2m_previous_day1`, `wind_speed_10m_previous_day1` | Day-ahead variables requested from previous runs. |
+| `timezone` | Yes | `Europe/Berlin` | Timezone sent for daily weather requests and used for local-date slicing of cached hourly data; live hourly requests use UTC. |
+
+### `features`
+
+| Key | Required | Current value | Default if omitted | Purpose |
+| --- | --- | --- | --- | --- |
+| `weather_strategy` | No | `available_day_ahead` | `persistence` | Selects `persistence`, `oracle`, or `available_day_ahead` weather features. |
+| `hdd_threshold` | Yes | `18.0` | none | Heating-degree threshold. |
+| `cdd_threshold` | Yes | `22.0` | none | Cooling-degree threshold. |
+| `fourier` | Yes | weekly and yearly entries | none | Seasonal terms; each entry requires `name`, `period`, and `harmonics`. |
+| `structural_breaks` | No | COVID and energy-crisis windows | built-in windows | Overrides inclusive calendar-indicator windows by `start` and `end`. |
+| `lags` | Yes | `[1, 7]` | none | Daily target lags. |
+| `hourly_lags` | No | `[24, 168]` | `[24, 168]` | Hourly target lags. |
+
+Current Fourier entries are `week` (`period: 7`, `harmonics: 1`) and `year`
+(`period: 365.25`, `harmonics: 1`). Current structural-break entries are
+`is_covid` (`2020-03-15` through `2020-06-15`) and `is_energy_crisis`
+(`2022-09-01` through `2023-03-31`).
+
+### `models`
+
+All four model maps are required by `run_evaluate.py`. Except for SARIMAX's
+explicit control fields, their values are passed to the corresponding installed
+estimator.
+
+| Model | Keys and current values |
 | --- | --- |
-| dates out of chronological order | `dates must be chronological: raw_start <= dataset_start <= train_end <= val_end <= calibration_start <= calibration_end <= test_start <= test_end` |
-| `test_end > raw_end` | `test_end must not exceed raw_end` |
-| no cities | `at least one city is required` |
-| non-positive population | `city populations must be positive` |
-| unknown `weather_strategy` | `weather_strategy must be 'persistence', 'oracle' or 'available_day_ahead'` |
-| empty `ensemble.members` | `ensemble.members must not be empty` |
-| `adaptive_gamma` out of (0, 1) | `uncertainty.adaptive_gamma must be between 0 and 1` |
-| `adaptive_window` < 1 | `uncertainty.adaptive_window must be positive` |
-| `rolling_window` < 2 | `monitoring.rolling_window must be at least 2` |
-| `mape_warning` <= 0 | `monitoring.mape_warning must be positive` |
-| `coverage_floor` out of (0, 1) | `monitoring.coverage_floor must be between 0 and 1` |
+| `sarimax` | `order: [2, 1, 1]`; `seasonal_order: [1, 0, 1, 7]`; `refit: false`; `refit_period: 90` |
+| `xgboost` | `n_estimators: 425`; `max_depth: 5`; `learning_rate: 0.04133507869002662`; `subsample: 0.7265537839619253`; `colsample_bytree: 0.8845748582218896`; `min_child_weight: 2`; `gamma: 3.2780443858087294` |
+| `lightgbm` | `n_estimators: 1137`; `max_depth: 5`; `learning_rate: 0.0068141987644542885`; `subsample: 0.8491138046425559`; `subsample_freq: 1`; `colsample_bytree: 0.8139882925367778`; `min_child_samples: 5`; `num_leaves: 18` |
+| `random_forest` | `n_estimators: 463`; `max_depth: 16`; `min_samples_split: 2`; `min_samples_leaf: 4`; `max_features: 0.9987985103162023` |
 
-`Config.from_yaml()` also fails with `KeyError` if any required section or key
-(`project`, `split`, `cities`, `smard`, `weather`, `features`, `models`,
-`tuning`, `seed`, `paths`) is missing. The optional sections `ensemble`,
-`uncertainty`, and `monitoring` fall back to the defaults listed above.
+`models.sarimax.refit` accepts YAML `false`/`true` or the string `periodic`.
+`refit_period` defaults to `90` when omitted. `seed` is added as
+`random_state` for tree models unless that parameter is already present.
 
-## Testing
+### `ensemble`, `uncertainty`, `seed`, and `paths`
 
-Config behavior is covered by `tests/test_config.py`, which verifies date/city
-parsing, population-weighted city weights, root-relative path resolution, and
-the chronological and monitoring validation rules.
+| Key | Required | Current value | Default if omitted | Purpose |
+| --- | --- | --- | --- | --- |
+| `ensemble.members` | No | `SARIMAX`, `xgboost`, `lightgbm` | same list | Members averaged by the daily ensemble; the list cannot be empty. |
+| `uncertainty.calibration_days` | No | `184` | `181` | Trailing calibration rows used by `run_intervals.py`; `--calib` overrides it. |
+| `uncertainty.adaptive_gamma` | No | `0.01` | `0.01` | Adaptive conformal update factor; must be strictly between 0 and 1. |
+| `uncertainty.adaptive_window` | No | `365` | `365` | Adaptive conformal trailing window; must be positive. |
+| `seed` | Yes | `42` | none | Random state supplied to tree models. |
+| `paths.raw_dir` | Yes | `data/raw` | none | Cached downloaded data. |
+| `paths.processed_dir` | Yes | `data/processed` | none | Built daily/hourly datasets and feature matrices. |
+| `paths.results_dir` | Yes | `results` | none | Evaluation and release artifacts. |
+
+The `ensemble` and `uncertainty` sections are optional as complete sections;
+if present, their listed keys are read directly. All path values in the shipped
+configuration are relative. The canonical pipeline rejects an absolute
+`paths.results_dir` and any relative non-result staging path that resolves
+outside the staging directory; absolute non-result paths are left as external inputs.
+
+## Required vs optional settings
+
+`Config.from_yaml()` directly requires `project`, `split`, `cities`, `smard`,
+`weather`, `features`, `models`, `seed`, and `paths`. It reads the project,
+split, and city fields immediately; other nested keys marked "Yes" are required
+by their downstream data, feature, model, or path consumer. Missing accessed
+keys raise `KeyError`. `ensemble` and `uncertainty` have whole-section defaults.
+
+`Config.validate()` raises `ValueError` for out-of-order dates, a test end after
+the raw end, no cities, non-positive populations, an unsupported weather
+strategy, an empty ensemble, an adaptive gamma outside `(0, 1)`, or a
+non-positive adaptive window.
+
+Some nested values are conditionally required by the code that uses them. For
+example, previous-runs weather settings are required when
+`features.weather_strategy` is `available_day_ahead`, and all four model maps are
+required by the full evaluation pipeline.
+
+## Defaults
+
+Source-defined defaults are:
+
+| Setting | Default |
+| --- | --- |
+| `features.weather_strategy` | `persistence` |
+| `features.hourly_lags` | `[24, 168]` |
+| `features.structural_breaks.is_covid` | `2020-03-15` through `2020-06-15` |
+| `features.structural_breaks.is_energy_crisis` | `2022-09-01` through `2023-03-31` |
+| `models.sarimax.refit_period` | `90` |
+| `ensemble` | `{members: [SARIMAX, xgboost, lightgbm]}` |
+| `uncertainty` | `{calibration_days: 181, adaptive_gamma: 0.01, adaptive_window: 365}` |
+
+There are no source defaults for other required settings.
+
+## Per-environment overrides
+
+The repository has no `.env`, `.env.example`, environment-specific YAML files,
+or automatic development/staging/production merge logic. Use a separate complete
+YAML file and pass it explicitly with `--config`. Keep relative path values next
+to that YAML file because `Config.root` is the file's parent directory.

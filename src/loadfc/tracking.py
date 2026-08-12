@@ -1,4 +1,4 @@
-"""Opt-in local MLflow tracking and model registration."""
+"""Release provenance and artifact hashing helpers."""
 
 from __future__ import annotations
 
@@ -6,30 +6,15 @@ import hashlib
 import json
 import os
 import subprocess
-from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any
-
-import mlflow
-import mlflow.sklearn
-import pandas as pd
-from mlflow.models import infer_signature
-from mlflow.tracking import MlflowClient
 
 PRESENTATION_ARTIFACTS = (
     "report/generated_results.tex",
     "report/technical-report-en.pdf",
     "dashboard/src/generated/release.json",
 )
-
-
-@dataclass(frozen=True)
-class TrackedModel:
-    run_id: str
-    model_name: str
-    model_version: str
-    tracking_uri: str
 
 
 def sha256_file(path: Path) -> str:
@@ -115,83 +100,3 @@ def bundle_fingerprint(identity: Mapping[str, Any]) -> str:
         fields["declared_artifacts"] = declared
     encoded = json.dumps(fields, ensure_ascii=True, separators=(",", ":"), sort_keys=True)
     return hashlib.sha256(encoded.encode()).hexdigest()
-
-
-def local_tracking_uri(root: Path) -> str:
-    """Return the absolute SQLite URI used by the local registry."""
-
-    return f"sqlite:///{(root / 'mlflow.db').resolve()}"
-
-
-def track_sklearn_run(
-    *,
-    root: Path,
-    experiment_name: str,
-    run_name: str,
-    model_name: str,
-    estimator: Any,
-    input_example: pd.DataFrame,
-    params: Mapping[str, str | int | float | bool],
-    metrics: Mapping[str, float],
-    tags: Mapping[str, str],
-    artifact_paths: Sequence[Path],
-    tracking_uri: str | None = None,
-) -> TrackedModel:
-    """Log one fitted estimator and register it with a candidate alias."""
-
-    uri = tracking_uri or local_tracking_uri(root)
-    mlflow.set_tracking_uri(uri)
-    mlflow.set_registry_uri(uri)
-    artifact_root = (root / "mlartifacts").resolve()
-    artifact_root.mkdir(parents=True, exist_ok=True)
-
-    client = MlflowClient(tracking_uri=uri, registry_uri=uri)
-    experiment = client.get_experiment_by_name(experiment_name)
-    if experiment is None:
-        experiment_id = client.create_experiment(
-            experiment_name,
-            artifact_location=artifact_root.as_uri(),
-        )
-    else:
-        experiment_id = experiment.experiment_id
-
-    prediction = estimator.predict(input_example)
-    signature = infer_signature(input_example, prediction)
-    with mlflow.start_run(experiment_id=experiment_id, run_name=run_name) as run:
-        mlflow.log_params(dict(params))
-        mlflow.log_metrics(dict(metrics))
-        mlflow.set_tags(dict(tags))
-        for path in artifact_paths:
-            mlflow.log_artifact(str(path), artifact_path="evaluation")
-        mlflow.sklearn.log_model(
-            sk_model=estimator,
-            name="model",
-            serialization_format="cloudpickle",
-            signature=signature,
-            input_example=input_example,
-            registered_model_name=model_name,
-            metadata={"feature_columns": list(input_example.columns)},
-        )
-        run_id = run.info.run_id
-
-    versions = [
-        version
-        for version in client.search_model_versions(f"run_id = '{run_id}'")
-        if version.name == model_name
-    ]
-    if len(versions) != 1:
-        raise RuntimeError(f"expected one registered model version, found {len(versions)}")
-    version = versions[0]
-    client.set_registered_model_alias(model_name, "candidate", version.version)
-    client.set_model_version_tag(
-        model_name,
-        version.version,
-        "validation_status",
-        "pending",
-    )
-    return TrackedModel(
-        run_id=run_id,
-        model_name=model_name,
-        model_version=str(version.version),
-        tracking_uri=uri,
-    )

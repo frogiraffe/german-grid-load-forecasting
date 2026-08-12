@@ -214,7 +214,7 @@ def _canonical_result_hashes(results: Path) -> dict[str, str]:
         path.relative_to(results).as_posix(): sha256_file(path)
         for path in sorted(results.rglob("*"))
         if path.is_file()
-        and path.name not in {"run_summary.json", "mlflow_run.csv"}
+        and path.name != "run_summary.json"
         and path.suffix in _RESULT_SUFFIXES
         and not any(
             part.startswith(".") or part == "__pycache__"
@@ -1140,9 +1140,9 @@ def main() -> None:
     assert summary["protocol"]["calibration_end"] == cfg.split.calibration_end.isoformat()
     assert summary["protocol"]["test_end"] == cfg.split.test_end.isoformat()
     assert summary["protocol"]["final_role"] == "retrospective_final"
-    dataset_csv = cfg.path("processed_dir") / "dataset.csv"
+    dataset_file = cfg.path("processed_dir") / "dataset.parquet"
     assert summary["data"]["rows"] == len(dataset)
-    assert summary["data"]["dataset_sha256"] == hashlib.sha256(dataset_csv.read_bytes()).hexdigest()
+    assert summary["data"]["dataset_sha256"] == hashlib.sha256(dataset_file.read_bytes()).hexdigest()
     for key, expected in [
         ("validation_metrics", validation_metrics),
         ("calibration_metrics", calibration_metrics),

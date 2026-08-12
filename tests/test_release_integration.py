@@ -52,7 +52,7 @@ def _repo(tmp_path: Path) -> Path:
     for directory in ("data/raw", "data/processed", "results"):
         (repo / directory).mkdir(parents=True)
     (repo / "data/raw/input.csv").write_text("raw\n")
-    (repo / "data/processed/dataset.csv").write_text("processed\n")
+    (repo / "data/processed/dataset.parquet").write_text("processed\n")
     (repo / "results/previous.txt").write_text("previous canonical bundle\n")
     (repo / "config.yaml").write_text(
         yaml.safe_dump(
@@ -283,29 +283,6 @@ def test_clean_release_runs_all_stages_in_staging_and_promotes_once(tmp_path, mo
         assert (repo / relative).read_text() == expected
     assert promotions == 1
     assert not list(repo.glob(".results-staging-*"))
-
-
-def test_failed_promotion_restores_previous_bundle(tmp_path, monkeypatch):
-    module = _module()
-    repo = _repo(tmp_path)
-    staged = repo / ".results-staging-test" / "results"
-    staged.mkdir(parents=True)
-    (staged / "new.txt").write_text("new\n")
-    before = _tree_digest(repo / "results")
-    real_replace = Path.replace
-
-    def fail_staged_replace(path: Path, target: Path):
-        if path == staged:
-            raise OSError("injected promotion failure")
-        return real_replace(path, target)
-
-    monkeypatch.setattr(Path, "replace", fail_staged_replace)
-
-    with pytest.raises(OSError, match="injected promotion failure"):
-        module._promote_bundle(staged, repo / "results")
-
-    assert _tree_digest(repo / "results") == before
-    assert not (repo / ".results-backup").exists()
 
 
 @pytest.mark.parametrize("failing_destination", ["results", "dashboard", "presentation"])

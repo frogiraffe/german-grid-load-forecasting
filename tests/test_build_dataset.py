@@ -139,4 +139,3 @@ def test_build_hourly_writes_separate_artifacts(tmp_path, monkeypatch):
 
     assert len(frame) == 3
     assert (tmp_path / "processed_dir" / "dataset_hourly.parquet").exists()
-    assert (tmp_path / "processed_dir" / "dataset_hourly.csv").exists()

@@ -45,7 +45,7 @@ def _canonical_result_files(results: Path) -> list[Path]:
         path
         for path in sorted(results.rglob("*"))
         if path.is_file()
-        and path.name not in {"run_summary.json", "mlflow_run.csv"}
+        and path.name != "run_summary.json"
         and path.suffix in _RESULT_SUFFIXES
         and not any(
             part.startswith(".") or part == "__pycache__"
@@ -115,7 +115,7 @@ def main() -> None:
         stream_id: protocol_fingerprint(validate_protocol_record(record))
         for stream_id, record in records.items()
     }
-    dataset_path = cfg.path("processed_dir") / "dataset.csv"
+    dataset_path = cfg.path("processed_dir") / "dataset.parquet"
     payload = {
         "record_type": "forecast_evaluation_summary",
         "schema_version": 2,
@@ -124,7 +124,7 @@ def main() -> None:
         "data": {
             "start": cfg.dataset_start.isoformat(),
             "end": cfg.raw_end.isoformat(),
-            "rows": len(pd.read_csv(dataset_path)),
+            "rows": len(pd.read_parquet(dataset_path)),
             "dataset_sha256": sha256_file(dataset_path),
         },
         "protocol": {

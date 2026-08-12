@@ -1,0 +1,37 @@
+name: reproduce release evidence
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v9.0.0
+      - name: Install Python dependencies
+        run: uv sync --extra dev --extra explain
+      - name: Install Tectonic
+        run: |
+          curl -fsSL \
+            https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.16.9/tectonic-0.16.9-x86_64-unknown-linux-musl.tar.gz \
+            | tar xz
+          echo "$PWD" >> "$GITHUB_PATH"
+      - name: Reproduce the evaluated release
+        run: uv run python scripts/run_pipeline.py
+      - name: Upload full result tables
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence-${{ github.sha }}
+          path: |
+            results/
+            report/technical-report-en.pdf
+          retention-days: 30
+          if-no-files-found: error

@@ -46,6 +46,9 @@ def aggregate_horizon_to_daily(
     selected = predictions[predictions.index.get_level_values("horizon") == horizon].copy()
     if selected.empty:
         raise ValueError(f"hourly predictions contain no horizon {horizon}")
+    hourly_values = pd.to_numeric(selected["prediction"], errors="coerce").to_numpy()
+    if not np.isfinite(hourly_values).all():
+        raise ValueError("hourly predictions must be finite")
     valid_time = pd.DatetimeIndex(selected.index.get_level_values("valid_time")).tz_convert(
         timezone
     )
@@ -73,6 +76,9 @@ def reconcile_to_daily_means(
     selected = predictions[predictions.index.get_level_values("horizon") == horizon].copy()
     if selected.empty:
         raise ValueError(f"hourly predictions contain no horizon {horizon}")
+    hourly_values = pd.to_numeric(selected["prediction"], errors="coerce").to_numpy()
+    if not np.isfinite(hourly_values).all():
+        raise ValueError("hourly predictions must be finite")
 
     anchors = daily_forecasts.copy()
     anchors.index = pd.Index(pd.to_datetime(anchors.index).date, name="date")
@@ -112,7 +118,7 @@ def reconcile_to_daily_means(
         )
 
     profile_means = (
-        pd.Series(selected["prediction"].to_numpy(dtype="float64"), index=local_dates)
+        pd.Series(hourly_values, index=local_dates)
         .groupby(level="date")
         .mean()
     )

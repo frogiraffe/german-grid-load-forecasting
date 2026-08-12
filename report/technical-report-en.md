@@ -5,7 +5,15 @@
 **Author:** chiki
 
 <!-- loadfc:generated-start -->
-Release results are generated from the checked source revision.
+### Release results
+
+- **Period:** 01 Jan 2026 to 04 Aug 2026; n=216 days.
+- **Daily forecast:** Ensemble. MAE 1003.6 MW, MAPE 1.867%, and MASE 0.445. Reference models: Naive (t-1) MAPE 7.025% (n=216); Seasonal naive (t-7) MAPE 5.575% (n=216).
+- **Hourly forecast:** Residual hybrid. Daily-total alignment reduced MAE from 1627.6 MW to 1557.7 MW (-4.30%). The result contains n=5183 hourly values. The daily model was LightGBM.
+- **Model comparison:** Validation MAE was 1465.3 MW for Residual hybrid and 1471.0 MW for Direct LightGBM. The paired difference on the final data was +1.9 MW. Its 95% range was [-48.8, 52.1] MW across 216 days. This range includes zero, so the data do not show a clear winner.
+- **Uncertainty ranges:** Symmetric 90%: target 90%, measured coverage 84.89%, mean width 5573.1 MW, interval score 8831.6 MW, n=5183; Adaptive 90%: target 90%, measured coverage 89.95%, mean width 6529.3 MW, interval score 8250.5 MW, n=5183; CQR 90%: target 90%, measured coverage 86.51%, mean width 7550.2 MW, interval score 10567.7 MW, n=5183.
+- **Release check:** source `555cfd0381a880ca22264e98fd94aa4004efec7e`; daily protocol `b6f14a50c9327083ebfb68402a7348d02a6c38bfe8a1bc8d5dc6ceb33315bba3`; hourly protocol `2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7`; bundle `847a190df672fac4c67369db822fe82767bdbe1a1ca3e6ada2a3787568fb2e69`.
+- **Scope:** The final period was already examined. These results describe this data period and do not state future accuracy.
 <!-- loadfc:generated-end -->
 
 ## 1. Purpose
@@ -95,19 +103,7 @@ Both interval methods use the same reconciled point forecasts.
 
 The current implementation keeps the models frozen. Coverage is empirical; adaptive intervals are prequential monitoring without an unconditional time-series guarantee.
 
-## 8. MLflow
-
-MLflow stores `ReconciledForecaster`. The object contains these components:
-
-- fitted hourly model;
-- fitted daily model;
-- hourly feature schema;
-- daily feature schema;
-- reconciliation operation.
-
-Artifact replay is checked against the persisted evaluation predictions.
-
-## 9. Data validation
+## 8. Data validation
 
 Pandera validates load and weather data.
 
@@ -117,10 +113,10 @@ Pandera validates load and weather data.
 - UTC timestamps must be unique and complete.
 - Each timestamp must be on the hourly grid.
 
-The telemetry process compares indexes before each join. It rejects missing or
-nonfinite interval bounds.
+The evaluation process compares indexes before each join. It rejects missing
+or nonfinite interval bounds.
 
-## 10. Datetime calculation
+## 9. Datetime calculation
 
 Pandas can store datetime values in nanoseconds or microseconds. Raw `.asi8`
 values depend on this storage unit.
@@ -131,7 +127,7 @@ produces the same scale for both storage units.
 A regression test uses `datetime64[us]`. It checks hourly increments and the
 weekly Fourier phase.
 
-## 11. Verification
+## 10. Verification
 
 The release uses these commands:
 
@@ -142,15 +138,14 @@ uv run pytest --cov=loadfc --cov-report=term-missing --cov-fail-under=80
 uv run python scripts/validate_results.py
 ```
 
-## 12. Limits
+## 11. Limits
 
 The model comparison is retrospective and has uncertainty.
 
 Five population-weighted cities represent national weather exposure. Regional
 effects remain outside the model scope.
 
-Conformal coverage can change during distribution shift. The local MLflow
-registry has no remote promotion controls.
+Conformal coverage can change during distribution shift.
 
 A production service also requires scheduling, access control, service-level
 objectives, and rollback rules.

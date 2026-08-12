@@ -20,11 +20,7 @@ dependencies = [
     "xgboost-cpu>=3.0; platform_machine == 'x86_64' and (sys_platform == 'linux' or sys_platform == 'win32')",
     "xgboost>=3.0; platform_machine != 'x86_64' or (sys_platform != 'linux' and sys_platform != 'win32')",
     "lightgbm>=4.0",
-    "optuna>=3.4",
     "holidays>=0.40",
-    "matplotlib>=3.7",
-    "seaborn>=0.13",
-    "mlflow>=3.0,<4",
     "pandera[pandas]>=0.32,<1",
 ]
 

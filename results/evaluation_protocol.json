@@ -1,0 +1,775 @@
+{
+  "records": {
+    "daily/SARIMAX": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed": "calibration_residuals"
+      },
+      "model_identity": "SARIMAX",
+      "model_parameters": {},
+      "ordered_feature_columns": [
+        "Weekend",
+        "holiday_national",
+        "holiday_religious",
+        "bridge_day",
+        "pre_holiday",
+        "post_holiday",
+        "is_covid",
+        "is_energy_crisis",
+        "Temp_forecast",
+        "Wind_forecast",
+        "HDD",
+        "CDD",
+        "Temp_anomaly",
+        "sin_1_week",
+        "cos_1_week",
+        "sin_1_year",
+        "cos_1_year"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "rolling_update_after_actual": true,
+        "sarimax_refit": "false",
+        "sarimax_refit_period": 90
+      },
+      "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "daily/SARIMAX",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "daily/ensemble": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed": "calibration_residuals"
+      },
+      "model_identity": "unweighted_ensemble",
+      "model_parameters": {
+        "aggregation": "mean",
+        "members": [
+          "SARIMAX",
+          "xgboost",
+          "lightgbm"
+        ]
+      },
+      "ordered_feature_columns": [
+        "SARIMAX",
+        "xgboost",
+        "lightgbm"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "rolling_update_after_actual": true,
+        "sarimax_refit": "false",
+        "sarimax_refit_period": 90
+      },
+      "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "daily/ensemble",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "daily/lightgbm": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed": "calibration_residuals"
+      },
+      "model_identity": "lightgbm",
+      "model_parameters": {
+        "colsample_bytree": 0.8139882925367778,
+        "learning_rate": 0.0068141987644542885,
+        "max_depth": 5,
+        "min_child_samples": 5,
+        "n_estimators": 1137,
+        "num_leaves": 18,
+        "random_state": 42,
+        "subsample": 0.8491138046425559,
+        "subsample_freq": 1
+      },
+      "ordered_feature_columns": [
+        "Weekend",
+        "holiday_national",
+        "holiday_religious",
+        "bridge_day",
+        "pre_holiday",
+        "post_holiday",
+        "is_covid",
+        "is_energy_crisis",
+        "Temp_forecast",
+        "Wind_forecast",
+        "HDD",
+        "CDD",
+        "Temp_anomaly",
+        "sin_1_week",
+        "cos_1_week",
+        "sin_1_year",
+        "cos_1_year",
+        "L_t-1",
+        "L_t-7"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "rolling_update_after_actual": true,
+        "sarimax_refit": "false",
+        "sarimax_refit_period": 90
+      },
+      "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "daily/lightgbm",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "daily/naive_1d": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed": "calibration_residuals"
+      },
+      "model_identity": "deterministic_baseline:naive_1d",
+      "model_parameters": {
+        "rule": "L_t-1"
+      },
+      "ordered_feature_columns": [
+        "L_t-1"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "rolling_update_after_actual": true,
+        "sarimax_refit": "false",
+        "sarimax_refit_period": 90
+      },
+      "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "daily/naive_1d",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "daily/random_forest": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed": "calibration_residuals"
+      },
+      "model_identity": "random_forest",
+      "model_parameters": {
+        "max_depth": 16,
+        "max_features": 0.9987985103162023,
+        "min_samples_leaf": 4,
+        "min_samples_split": 2,
+        "n_estimators": 463,
+        "random_state": 42
+      },
+      "ordered_feature_columns": [
+        "Weekend",
+        "holiday_national",
+        "holiday_religious",
+        "bridge_day",
+        "pre_holiday",
+        "post_holiday",
+        "is_covid",
+        "is_energy_crisis",
+        "Temp_forecast",
+        "Wind_forecast",
+        "HDD",
+        "CDD",
+        "Temp_anomaly",
+        "sin_1_week",
+        "cos_1_week",
+        "sin_1_year",
+        "cos_1_year",
+        "L_t-1",
+        "L_t-7"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "rolling_update_after_actual": true,
+        "sarimax_refit": "false",
+        "sarimax_refit_period": 90
+      },
+      "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "daily/random_forest",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "daily/seasonal_naive_7d": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed": "calibration_residuals"
+      },
+      "model_identity": "deterministic_baseline:seasonal_naive_7d",
+      "model_parameters": {
+        "rule": "L_t-7"
+      },
+      "ordered_feature_columns": [
+        "L_t-7"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "rolling_update_after_actual": true,
+        "sarimax_refit": "false",
+        "sarimax_refit_period": 90
+      },
+      "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "daily/seasonal_naive_7d",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "daily/xgboost": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed": "calibration_residuals"
+      },
+      "model_identity": "xgboost",
+      "model_parameters": {
+        "colsample_bytree": 0.8845748582218896,
+        "gamma": 3.2780443858087294,
+        "learning_rate": 0.04133507869002662,
+        "max_depth": 5,
+        "min_child_weight": 2,
+        "n_estimators": 425,
+        "random_state": 42,
+        "subsample": 0.7265537839619253
+      },
+      "ordered_feature_columns": [
+        "Weekend",
+        "holiday_national",
+        "holiday_religious",
+        "bridge_day",
+        "pre_holiday",
+        "post_holiday",
+        "is_covid",
+        "is_energy_crisis",
+        "Temp_forecast",
+        "Wind_forecast",
+        "HDD",
+        "CDD",
+        "Temp_anomaly",
+        "sin_1_week",
+        "cos_1_week",
+        "sin_1_year",
+        "cos_1_year",
+        "L_t-1",
+        "L_t-7"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "rolling_update_after_actual": true,
+        "sarimax_refit": "false",
+        "sarimax_refit_period": 90
+      },
+      "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "daily/xgboost",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "hourly/anchor/lightgbm": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed_cqr": "calibration_scores_frozen"
+      },
+      "model_identity": "daily_anchor:lightgbm",
+      "model_parameters": {
+        "colsample_bytree": 0.8139882925367778,
+        "learning_rate": 0.0068141987644542885,
+        "max_depth": 5,
+        "min_child_samples": 5,
+        "n_estimators": 1137,
+        "num_leaves": 18,
+        "subsample": 0.8491138046425559,
+        "subsample_freq": 1
+      },
+      "ordered_feature_columns": [
+        "Weekend",
+        "holiday_national",
+        "holiday_religious",
+        "bridge_day",
+        "pre_holiday",
+        "post_holiday",
+        "is_covid",
+        "is_energy_crisis",
+        "Temp_forecast",
+        "Wind_forecast",
+        "HDD",
+        "CDD",
+        "Temp_anomaly",
+        "sin_1_week",
+        "cos_1_week",
+        "sin_1_year",
+        "cos_1_year",
+        "L_t-1",
+        "L_t-7"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "update": "none"
+      },
+      "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "hourly/anchor/lightgbm",
+      "validation_selection_evidence": "results/hourly/model_ablation_validation_reconciled.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "hourly/point/lightgbm_direct": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed_cqr": "calibration_scores_frozen"
+      },
+      "model_identity": "direct_hourly:lightgbm_direct",
+      "model_parameters": {
+        "horizon": 24,
+        "selected_model": "lightgbm_direct"
+      },
+      "ordered_feature_columns": [
+        "Temp_forecast",
+        "Wind_forecast",
+        "HDD",
+        "CDD",
+        "Temp_anomaly",
+        "Weekend",
+        "holiday_national",
+        "holiday_religious",
+        "bridge_day",
+        "pre_holiday",
+        "post_holiday",
+        "is_covid",
+        "is_energy_crisis",
+        "hour",
+        "sin_hour",
+        "cos_hour",
+        "trend_hour",
+        "sin_1_week",
+        "cos_1_week",
+        "sin_1_year",
+        "cos_1_year",
+        "L_t-24",
+        "L_t-168",
+        "horizon"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "update": "none"
+      },
+      "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "hourly/point/lightgbm_direct",
+      "validation_selection_evidence": "results/hourly/model_ablation_validation_reconciled.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "hourly/point/residual_hybrid": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed_cqr": "calibration_scores_frozen"
+      },
+      "model_identity": "reconciled_hourly:residual_hybrid",
+      "model_parameters": {
+        "horizon": 24,
+        "selected_model": "residual_hybrid"
+      },
+      "ordered_feature_columns": [
+        "Temp_forecast",
+        "Wind_forecast",
+        "HDD",
+        "CDD",
+        "Temp_anomaly",
+        "Weekend",
+        "holiday_national",
+        "holiday_religious",
+        "bridge_day",
+        "pre_holiday",
+        "post_holiday",
+        "is_covid",
+        "is_energy_crisis",
+        "hour",
+        "sin_hour",
+        "cos_hour",
+        "trend_hour",
+        "sin_1_week",
+        "cos_1_week",
+        "sin_1_year",
+        "cos_1_year",
+        "L_t-24",
+        "L_t-168",
+        "horizon"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "update": "none"
+      },
+      "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "hourly/point/residual_hybrid",
+      "validation_selection_evidence": "results/hourly/model_ablation_validation_reconciled.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "hourly/point/ridge_direct": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed_cqr": "calibration_scores_frozen"
+      },
+      "model_identity": "direct_hourly:ridge_direct",
+      "model_parameters": {
+        "horizon": 24,
+        "selected_model": "ridge_direct"
+      },
+      "ordered_feature_columns": [
+        "Temp_forecast",
+        "Wind_forecast",
+        "HDD",
+        "CDD",
+        "Temp_anomaly",
+        "Weekend",
+        "holiday_national",
+        "holiday_religious",
+        "bridge_day",
+        "pre_holiday",
+        "post_holiday",
+        "is_covid",
+        "is_energy_crisis",
+        "hour",
+        "sin_hour",
+        "cos_hour",
+        "trend_hour",
+        "sin_1_week",
+        "cos_1_week",
+        "sin_1_year",
+        "cos_1_year",
+        "L_t-24",
+        "L_t-168",
+        "horizon"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "update": "none"
+      },
+      "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "hourly/point/ridge_direct",
+      "validation_selection_evidence": "results/hourly/model_ablation_validation_reconciled.csv",
+      "weather_strategy": "available_day_ahead"
+    },
+    "hourly/quantile/lightgbm_cqr": {
+      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "final_role": "retrospective_final",
+      "interval_state_policy": {
+        "adaptive": "updates_after_actual_only",
+        "fixed_cqr": "calibration_scores_frozen"
+      },
+      "model_identity": "lightgbm_quantile_cqr",
+      "model_parameters": {
+        "colsample_bytree": 0.8139882925367778,
+        "horizon": 24,
+        "learning_rate": 0.0068141987644542885,
+        "max_depth": 5,
+        "min_child_samples": 5,
+        "n_estimators": 1137,
+        "num_leaves": 18,
+        "objective": "quantile",
+        "quantiles": [
+          0.05,
+          0.95
+        ],
+        "subsample": 0.8491138046425559,
+        "subsample_freq": 1
+      },
+      "ordered_feature_columns": [
+        "Temp_forecast",
+        "Wind_forecast",
+        "HDD",
+        "CDD",
+        "Temp_anomaly",
+        "Weekend",
+        "holiday_national",
+        "holiday_religious",
+        "bridge_day",
+        "pre_holiday",
+        "post_holiday",
+        "is_covid",
+        "is_energy_crisis",
+        "hour",
+        "sin_hour",
+        "cos_hour",
+        "trend_hour",
+        "sin_1_week",
+        "cos_1_week",
+        "sin_1_year",
+        "cos_1_year",
+        "L_t-24",
+        "L_t-168",
+        "horizon"
+      ],
+      "point_state_policy": {
+        "fit_through": "2025-06-30",
+        "update": "none"
+      },
+      "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
+      "schema_version": 1,
+      "seed": 42,
+      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "splits": {
+        "calibration": [
+          "2025-07-01",
+          "2025-12-31"
+        ],
+        "retrospective_final": [
+          "2026-01-01",
+          "2026-08-04"
+        ],
+        "train": [
+          "2019-01-14",
+          "2023-12-31"
+        ],
+        "validation": [
+          "2024-01-01",
+          "2025-06-30"
+        ]
+      },
+      "stream_id": "hourly/quantile/lightgbm_cqr",
+      "validation_selection_evidence": "results/hourly/model_ablation_validation_reconciled.csv",
+      "weather_strategy": "available_day_ahead"
+    }
+  },
+  "schema_version": 1
+}

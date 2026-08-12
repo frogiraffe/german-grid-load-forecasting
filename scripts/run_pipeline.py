@@ -29,10 +29,8 @@ _RELEASE_STAGES = [
     "scripts/run_intervals.py",
     "scripts/run_hourly.py",
     "scripts/run_comparison.py",
-    "scripts/run_telemetry.py",
     "scripts/run_error_analysis.py",
     "scripts/run_analysis.py",
-    "scripts/run_plots.py",
     "scripts/run_shap.py",
     "scripts/write_run_summary.py",
     "scripts/render_report_data.py",
@@ -97,22 +95,6 @@ def _prepare_staging(config_path: Path) -> tuple[Path, Path, Path, Path]:
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, destination)
     return staging_root, staged_config, (staging_root / results_path).resolve(), canonical
-
-
-def _promote_bundle(staged: Path, canonical: Path) -> None:
-    backup = canonical.with_name(f".{canonical.name}-backup")
-    if backup.exists():
-        raise RuntimeError(f"stale release backup blocks promotion: {backup}")
-    if canonical.exists():
-        canonical.replace(backup)
-    try:
-        staged.replace(canonical)
-    except BaseException:
-        if backup.exists() and not canonical.exists():
-            backup.replace(canonical)
-        raise
-    if backup.exists():
-        shutil.rmtree(backup)
 
 
 def _promote_release(

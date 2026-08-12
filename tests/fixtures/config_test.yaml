@@ -22,7 +22,6 @@ features:
   structural_breaks: { is_covid: { start: "2020-03-15", end: "2020-06-15" } }
   lags: [1, 7]
 models: { sarimax: { order: [2,1,1], seasonal_order: [1,0,1,7], refit: false, refit_period: 90 } }
-tuning: { n_trials: 5, cv_splits: 2 }
 ensemble: { members: ["SARIMAX", "xgboost", "lightgbm"] }
 uncertainty: { calibration_days: 30, adaptive_gamma: 0.01, adaptive_window: 90 }
 seed: 42

@@ -113,7 +113,6 @@ def _run(tmp_path: Path, monkeypatch) -> Path:
     module = _module()
     module.MODELS = ["SARIMAX"]
     monkeypatch.setattr(module, "artifact_results_root", lambda cfg: results_dir)
-    monkeypatch.setattr(module.plots, "prediction_intervals", lambda *args: None)
     monkeypatch.setattr(sys, "argv", ["run_intervals.py", "--config", str(CONFIG)])
     module.main()
     return results_dir

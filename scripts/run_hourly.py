@@ -1,4 +1,4 @@
-"""Run the cached 24-step hourly hybrid forecast and monitoring pipeline."""
+"""Run the cached 24-step hourly forecast, reconciliation, and drift evaluation."""
 
 from __future__ import annotations
 
@@ -53,7 +53,6 @@ from loadfc.models.hourly import (
     make_hourly_quantile_lightgbm,
 )
 from loadfc.models.ml import make_estimator
-from loadfc.models.reconciled import ReconciledForecaster
 from loadfc.tracking import git_commit, sha256_file
 
 HourlyModel = HourlyHybridForecaster | HourlyDirectForecaster
@@ -148,36 +147,6 @@ def _predict_daily_anchors(
     if prediction.shape != (len(period),) or not np.isfinite(prediction).all():
         raise ValueError("daily anchor predictions must be finite")
     return pd.Series(prediction, index=period.index, name="forecast")
-
-
-def _hourly_estimator(model: HourlyModel) -> Any:
-    if isinstance(model, HourlyHybridForecaster):
-        return model.estimator
-    if model.estimator_ is None:
-        raise RuntimeError("selected hourly model has no fitted estimator")
-    return model.estimator_
-
-
-def _reconciliation_input(
-    hourly_rows: pd.DataFrame,
-    daily_matrix: pd.DataFrame,
-    hourly_columns: tuple[str, ...],
-    daily_columns: tuple[str, ...],
-) -> pd.DataFrame:
-    selected = hourly_rows[hourly_rows["horizon"] == 24]
-    if selected.empty:
-        raise ValueError("reconciliation input requires horizon-24 rows")
-    valid_time = pd.DatetimeIndex(selected["valid_time"]).tz_convert("Europe/Berlin")
-    local_dates = pd.Index(valid_time.date, name="date")
-    daily = daily_matrix.reindex(local_dates)
-    if daily[list(daily_columns)].isna().any().any():
-        raise ValueError("daily reconciliation features do not cover all hourly local dates")
-
-    frame = selected[list(hourly_columns)].astype("float64")
-    frame["reconciliation_date"] = [day.isoformat() for day in local_dates]
-    for column in daily_columns:
-        frame[f"daily__{column}"] = daily[column].to_numpy(dtype="float64")
-    return frame
 
 
 def _predict_period(
@@ -794,11 +763,6 @@ def main() -> None:
         help="fetch/build the hourly dataset instead of requiring its cache",
     )
     parser.add_argument("--refresh", action="store_true")
-    parser.add_argument(
-        "--track",
-        action="store_true",
-        help="log the selected fitted model and evaluation artifacts to local MLflow",
-    )
     args = parser.parse_args()
     cfg = Config.from_yaml(args.config)
     weather_strategy = cfg.features.get("weather_strategy", "persistence")
@@ -1206,88 +1170,6 @@ def main() -> None:
         selected_model=selected_model,
         anchor_model=anchor_model,
     ).to_csv(output / "daily_model_comparison.csv")
-    if args.track:
-        from loadfc.tracking import git_commit, sha256_file, track_sklearn_run
-
-        if model.feature_columns is None:
-            raise RuntimeError("selected hourly model has no fitted feature schema")
-        test_rows = long_frame.loc[
-            _date_mask(
-                long_frame["valid_time"],
-                cfg.split.test_start,
-                cfg.split.test_end,
-            )
-        ]
-        reconciliation_input = _reconciliation_input(
-            test_rows,
-            daily_matrix,
-            model.feature_columns,
-            daily_columns,
-        )
-        reconciled_model = ReconciledForecaster(
-            hourly_estimator=_hourly_estimator(model),
-            daily_estimator=daily_anchor_estimator,
-            hourly_feature_columns=model.feature_columns,
-            daily_feature_columns=daily_columns,
-        )
-        np.testing.assert_allclose(
-            reconciled_model.predict(reconciliation_input),
-            reconciled_test["prediction"].to_numpy(dtype="float64"),
-        )
-        first_day = reconciliation_input["reconciliation_date"].iloc[0]
-        input_example = reconciliation_input[
-            reconciliation_input["reconciliation_date"] == first_day
-        ]
-        calibration_row = _model_ablation({selected_model: reconciled_calibration}).loc[
-            selected_model
-        ]
-        test_row = _model_ablation(test_reconciled_predictions).loc[selected_model]
-        interval_report = interval_evidence_output.query("slice_type == 'aggregate'").set_index("method")
-        tracked = track_sklearn_run(
-            root=cfg.root,
-            experiment_name="german-grid-hourly",
-            run_name=f"{selected_model}-h24",
-            model_name="loadfc-hourly-h24",
-            estimator=reconciled_model,
-            input_example=input_example,
-            params={
-                "selected_model": selected_model,
-                "daily_anchor_model": anchor_model,
-                "selection_metric": "reconciled_h24_hourly_MAE",
-                "horizon": 24,
-                "seed": cfg.seed,
-                "train_end": str(cfg.split.val_end),
-                "calibration_end": str(cfg.split.calibration_end),
-            },
-            metrics={
-                "calibration_reconciled_mae": float(calibration_row["hourly_MAE"]),
-                "calibration_reconciled_rmse": float(calibration_row["hourly_RMSE"]),
-                "test_reconciled_mae": float(test_row["hourly_MAE"]),
-                "test_reconciled_rmse": float(test_row["hourly_RMSE"]),
-                "cqr_coverage": float(interval_report.loc["cqr", "empirical_coverage"]),
-                "cqr_mean_width": float(interval_report.loc["cqr", "mean_width"]),
-            },
-            tags={
-                "git_commit": git_commit(cfg.root),
-                "dataset_sha256": sha256_file(dataset_path),
-                "config_sha256": sha256_file(config_path),
-                "selection_uses_test": "false",
-                "serialization_trust": "local_artifacts_only",
-            },
-            artifact_paths=[config_path, *sorted(output.glob("*.csv"))],
-        )
-        pd.DataFrame(
-            [
-                {
-                    "run_id": tracked.run_id,
-                    "model_name": tracked.model_name,
-                    "model_version": tracked.model_version,
-                    "alias": "candidate",
-                    "tracking_backend": "sqlite",
-                    "tracking_database": "mlflow.db",
-                }
-            ]
-        ).to_csv(output / "mlflow_run.csv", index=False)
     print(f"wrote hourly evaluation to {output}")
 
 

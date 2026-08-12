@@ -47,7 +47,6 @@ def build(cfg: Config, refresh: bool = False) -> pd.DataFrame:
     out_dir = cfg.path("processed_dir")
     out_dir.mkdir(parents=True, exist_ok=True)
     df.to_parquet(out_dir / "dataset.parquet")
-    df.to_csv(out_dir / "dataset.csv")
     return df
 
 
@@ -91,5 +90,4 @@ def build_hourly(cfg: Config, refresh: bool = False) -> pd.DataFrame:
     out_dir = cfg.path("processed_dir")
     out_dir.mkdir(parents=True, exist_ok=True)
     frame.to_parquet(out_dir / "dataset_hourly.parquet")
-    frame.to_csv(out_dir / "dataset_hourly.csv")
     return frame

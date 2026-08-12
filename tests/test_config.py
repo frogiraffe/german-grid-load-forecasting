@@ -50,28 +50,3 @@ def test_validate_rejects_dataset_start_before_raw_start(tmp_path):
     bad.write_text(yaml.safe_dump(raw))
     with pytest.raises(ValueError, match="chronological"):
         Config.from_yaml(bad)
-
-
-@pytest.mark.parametrize(
-    ("key", "value", "message"),
-    [
-        ("rolling_window", 1, "at least 2"),
-        ("mape_warning", 0, "must be positive"),
-        ("coverage_floor", 1.0, "between 0 and 1"),
-    ],
-)
-def test_validate_rejects_invalid_monitoring_thresholds(tmp_path, key, value, message):
-    import yaml
-
-    raw = yaml.safe_load(FIXTURE.read_text())
-    raw["monitoring"] = {
-        "rolling_window": 14,
-        "mape_warning": 5.0,
-        "coverage_floor": 0.85,
-        key: value,
-    }
-    bad = tmp_path / "bad.yaml"
-    bad.write_text(yaml.safe_dump(raw))
-
-    with pytest.raises(ValueError, match=message):
-        Config.from_yaml(bad)

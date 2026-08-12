@@ -26,7 +26,6 @@ def main() -> None:
 
     out_dir = cfg.path("processed_dir")
     feats.to_parquet(out_dir / "features.parquet")
-    feats.to_csv(out_dir / "features.csv")
 
     print(f"features: {feats.shape[0]} rows x {feats.shape[1]} cols")
     print("columns:", list(feats.columns))

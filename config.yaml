@@ -78,10 +78,6 @@ models:
     min_samples_leaf: 4
     max_features: 0.9987985103162023
 
-tuning:
-  n_trials: 50
-  cv_splits: 4
-
 ensemble:
   # Selected on the 2024-2025 validation period, before the July 2026 test.
   members: ["SARIMAX", "xgboost", "lightgbm"]
@@ -90,11 +86,6 @@ uncertainty:
   calibration_days: 184
   adaptive_gamma: 0.01
   adaptive_window: 365
-
-monitoring:
-  rolling_window: 14
-  mape_warning: 5.0
-  coverage_floor: 0.85
 
 seed: 42
 
