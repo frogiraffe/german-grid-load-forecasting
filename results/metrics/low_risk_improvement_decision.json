@@ -11,7 +11,7 @@
     "selection_period_ends_at_validation_end": "2025-06-30"
   },
   "practical_tie_threshold": 1e-12,
-  "protocol_fingerprint": "b6f14a50c9327083ebfb68402a7348d02a6c38bfe8a1bc8d5dc6ceb33315bba3",
+  "protocol_fingerprint": "ef5d669f14abd4e8b58a35cbd0c4c500fb070817dd4e12a227e9b218b1719247",
   "rationale": "Accepted because persistence weather improves validation MAPE beyond the practical tie threshold.",
   "selected_model": "ensemble",
   "validation_evidence_path": "results/metrics/persistence_weather_validation_metrics.csv",

@@ -1,7 +1,7 @@
 {
   "records": {
     "daily/SARIMAX": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -37,7 +37,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -57,11 +57,11 @@
         ]
       },
       "stream_id": "daily/SARIMAX",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/ensemble": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -90,7 +90,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -110,11 +110,11 @@
         ]
       },
       "stream_id": "daily/ensemble",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/lightgbm": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -162,7 +162,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -182,11 +182,11 @@
         ]
       },
       "stream_id": "daily/lightgbm",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/naive_1d": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -208,7 +208,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -228,11 +228,11 @@
         ]
       },
       "stream_id": "daily/naive_1d",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/random_forest": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -277,7 +277,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -297,11 +297,11 @@
         ]
       },
       "stream_id": "daily/random_forest",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/seasonal_naive_7d": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -323,7 +323,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -343,11 +343,11 @@
         ]
       },
       "stream_id": "daily/seasonal_naive_7d",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/xgboost": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -394,7 +394,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -414,11 +414,11 @@
         ]
       },
       "stream_id": "daily/xgboost",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-fwd96zjp/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "hourly/anchor/lightgbm": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -463,7 +463,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -487,7 +487,7 @@
       "weather_strategy": "available_day_ahead"
     },
     "hourly/point/lightgbm_direct": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -531,7 +531,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -555,7 +555,7 @@
       "weather_strategy": "available_day_ahead"
     },
     "hourly/point/residual_hybrid": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -599,7 +599,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -623,7 +623,7 @@
       "weather_strategy": "available_day_ahead"
     },
     "hourly/point/ridge_direct": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -667,7 +667,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -691,7 +691,7 @@
       "weather_strategy": "available_day_ahead"
     },
     "hourly/quantile/lightgbm_cqr": {
-      "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+      "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
       "final_role": "retrospective_final",
       "interval_state_policy": {
         "adaptive": "updates_after_actual_only",
@@ -747,7 +747,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
       "splits": {
         "calibration": [
           "2025-07-01",

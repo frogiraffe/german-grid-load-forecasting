@@ -1,5 +1,5 @@
 {
-  "bundle_fingerprint": "847a190df672fac4c67369db822fe82767bdbe1a1ca3e6ada2a3787568fb2e69",
+  "bundle_fingerprint": "bdfbd6a7b98efa7b8f2279206bd17e0a400e7740086e5026a6d063e6913d3588",
   "comparison": {
     "bootstrap": [
       {
@@ -56,7 +56,7 @@
         "selection_period_ends_at_validation_end": "2025-06-30"
       },
       "practical_tie_threshold": 1e-12,
-      "protocol_fingerprint": "b6f14a50c9327083ebfb68402a7348d02a6c38bfe8a1bc8d5dc6ceb33315bba3",
+      "protocol_fingerprint": "ef5d669f14abd4e8b58a35cbd0c4c500fb070817dd4e12a227e9b218b1719247",
       "rationale": "Accepted because persistence weather improves validation MAPE beyond the practical tie threshold.",
       "selected_model": "ensemble",
       "validation_evidence_path": "results/metrics/persistence_weather_validation_metrics.csv",
@@ -70,7 +70,7 @@
       "selection_metric": "reconciled_h24_hourly_MAE",
       "selection_period_end": "2025-06-30",
       "selection_period_start": "2024-01-01",
-      "selection_protocol_fingerprint": "2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7"
+      "selection_protocol_fingerprint": "bf649cb8b18e90d447fef2a69314fe61f526d6ab91313c3c5b32755d30221258"
     }
   },
   "final_role": "retrospective_final",
@@ -11973,7 +11973,7 @@
       }
     }
   },
-  "generated_at": "2026-08-12T14:26:09.150108+00:00",
+  "generated_at": "2026-08-12T17:23:27.496515+00:00",
   "hourly_error": {
     "dst_sensitive_sample_sizes": true,
     "horizon_profile": [
@@ -13112,7 +13112,7 @@
         "n": 216,
         "nominal": 0.8,
         "point_state_policy": "{\"fit_through\": \"2025-06-30\", \"rolling_update_after_actual\": true, \"sarimax_refit\": \"false\", \"sarimax_refit_period\": 90}",
-        "protocol_fingerprint": "b6f14a50c9327083ebfb68402a7348d02a6c38bfe8a1bc8d5dc6ceb33315bba3",
+        "protocol_fingerprint": "ef5d669f14abd4e8b58a35cbd0c4c500fb070817dd4e12a227e9b218b1719247",
         "stream_id": "daily/ensemble"
       },
       {
@@ -13128,7 +13128,7 @@
         "n": 216,
         "nominal": 0.95,
         "point_state_policy": "{\"fit_through\": \"2025-06-30\", \"rolling_update_after_actual\": true, \"sarimax_refit\": \"false\", \"sarimax_refit_period\": 90}",
-        "protocol_fingerprint": "b6f14a50c9327083ebfb68402a7348d02a6c38bfe8a1bc8d5dc6ceb33315bba3",
+        "protocol_fingerprint": "ef5d669f14abd4e8b58a35cbd0c4c500fb070817dd4e12a227e9b218b1719247",
         "stream_id": "daily/ensemble"
       },
       {
@@ -13144,7 +13144,7 @@
         "n": 216,
         "nominal": 0.8,
         "point_state_policy": "{\"fit_through\": \"2025-06-30\", \"rolling_update_after_actual\": true, \"sarimax_refit\": \"false\", \"sarimax_refit_period\": 90}",
-        "protocol_fingerprint": "b6f14a50c9327083ebfb68402a7348d02a6c38bfe8a1bc8d5dc6ceb33315bba3",
+        "protocol_fingerprint": "ef5d669f14abd4e8b58a35cbd0c4c500fb070817dd4e12a227e9b218b1719247",
         "stream_id": "daily/ensemble"
       },
       {
@@ -13160,7 +13160,7 @@
         "n": 216,
         "nominal": 0.95,
         "point_state_policy": "{\"fit_through\": \"2025-06-30\", \"rolling_update_after_actual\": true, \"sarimax_refit\": \"false\", \"sarimax_refit_period\": 90}",
-        "protocol_fingerprint": "b6f14a50c9327083ebfb68402a7348d02a6c38bfe8a1bc8d5dc6ceb33315bba3",
+        "protocol_fingerprint": "ef5d669f14abd4e8b58a35cbd0c4c500fb070817dd4e12a227e9b218b1719247",
         "stream_id": "daily/ensemble"
       }
     ],
@@ -13588,7 +13588,7 @@
     }
   ],
   "protocol": {
-    "config_sha256": "27a402493e34a554f8fcda6699dae11d4c1e61e277140862b5c462810a1a8481",
+    "config_sha256": "48f8b1ecc64acdb2fbfd8ff1464b562a6c3031f2874ee821ec5904f261435388",
     "interval_state_policy": {
       "daily": {
         "adaptive": "updates_after_actual_only",
@@ -13599,7 +13599,7 @@
         "fixed_cqr": "calibration_scores_frozen"
       }
     },
-    "lock_sha256": "27667e0360d7a7222d5fbfcf9dc3556583655f355da5c3529eb5a092ce9881ba",
+    "lock_sha256": "2a125c532bf225f25bb667683ae7cb0da802f9506445e4980abfd81e5b7fc8b6",
     "manifest_status": "hash_verified",
     "periods": {
       "calibration": [
@@ -13779,38 +13779,38 @@
     "analysis/load_profile_weekday.csv": "95a6e748eea0419f72c89f1b743b153a623dca2cc51403bb34fa1944ec8db01a",
     "analysis/shap_importance.csv": "1df6b091eaf5c5bfb60d02d9071ee62b71ce847bdd241982d1639f780bf3de42",
     "analysis/temperature_load_curve.csv": "4a7330c1dd0668fc0c20307ace8ace779bb2f34601bf6804420c36b869a6198e",
-    "evaluation_protocol.json": "9b317595ca6a64fd8ff64973be9416fa3fa2d1a0451dc76d380c441f06f81f00",
-    "hourly/coverage_by_horizon.csv": "2d987129f7a2b4edda6a089f705c2bc4977d3b639fbb48c925895da6b44c82fc",
-    "hourly/coverage_by_month.csv": "cad665846a644c7d73e6a26b8294a21dcc0119c8d5fd0799b1efaec6b775e4d3",
+    "evaluation_protocol.json": "78121be52988cc78ad4cfce7e133eb4fd6f33517685d02f06f7f29731bb1068a",
+    "hourly/coverage_by_horizon.csv": "b5e28cdd61c46fdc5a9ce5b856d851a8e20ee6f0659c26c2d7435ba7cf23ef18",
+    "hourly/coverage_by_month.csv": "ccf20185e9e3894568ff99c24f74bb25464660b1cb48a9868c36fec2e84a8c1a",
     "hourly/feature_drift.csv": "a542edc2b708d496d60ef32acc0eb2944e58f147a66c07c6bd0564e4db944d29",
-    "hourly/hourly_comparison.csv": "b34e6fbc20bb9b1225424f1129dabe6d84c88267d4cc34134238332585224d56",
-    "hourly/interval_comparison.csv": "00d8dad9c8ad16b3ac37c3109c93f6c10bdc78395cf1bd598b4a9cb2eed76726",
+    "hourly/hourly_comparison.csv": "22092363c606b56e2881063fb8267a488619f83b17221f720459496f669044c5",
+    "hourly/interval_comparison.csv": "d2dd7393c82fa1bdb98eece69d025376e03df09af96b70d70b39ad230fc211e0",
     "hourly/metrics_by_horizon.csv": "708c8be0a73cf55f07651a4bc368c3eaccddc89305d141557f00800f52b96d15",
     "hourly/model_ablation_test.csv": "b5df4a0451f70942375ed9ea5476cf0a0bf5ef38d4388ace03dd7847fa01834d",
     "hourly/model_ablation_test_reconciled.csv": "8496755528ab4d11bb11c7018fd85634ceb53396ef89758a98af96329d17094a",
     "hourly/model_ablation_test_uncertainty.csv": "8fffdacb339b173e570fd711ac3271b66dc49e79db4447c850a38bcc6b1a11dd",
     "hourly/model_ablation_validation.csv": "19d51cf636d8d9f5b54089e53aa9dd3a3291bf38c1d48ecb2be170775e59ac76",
     "hourly/model_ablation_validation_reconciled.csv": "5525aeef82fcc7081dd600e90e8335656d40515bf48b2e1d7cdf37c276dd9aa9",
-    "hourly/model_selection.csv": "80521ccb5afa435ac183f26dbd5250687c80731c204b5ba82122f10656923b17",
+    "hourly/model_selection.csv": "da7b656f19fc2701cec101568b4067b9e4a6e6d106e3cebb48db7ee02e7a7664",
     "hourly/reconciliation_invariants.csv": "f350ccff51210fbfb0aca5642c02f828644bffe8ff52c49a44d9ee29e657f8e2",
-    "hourly/reconciliation_metrics.csv": "582ec5bbbca58ab45784b3cf3e352e9e481b58d4c51551726845736d9c5f34a3",
-    "hourly/residual_drift_monthly.csv": "1a4a410b91bca18c170b0e1f1bcbaf327fcf20b3db0f34eba302b902e829ce87",
-    "hourly/test_predictions/lightgbm_direct.csv": "95e930ad3465743eb843d31c55d8e9391de5d050f90970566e3d59952eb50a34",
-    "hourly/test_predictions/residual_hybrid.csv": "84e8d4b5b089eaaf54e6e9802344054276d5eee2410863536f87a1d27b2233b9",
-    "hourly/test_predictions/ridge_direct.csv": "e4ab681435cc7f4a1167652d9e0952f6c94d4fbedb74de0578e797072a582a5d",
+    "hourly/reconciliation_metrics.csv": "1253234bd0854af828805ee0abc66018b8585ad072bee2969015900681d6c4eb",
+    "hourly/residual_drift_monthly.csv": "e58304a0a401fccc780b0443708f8068f4ab46b5cdc8a7116c575f27838c30c0",
+    "hourly/test_predictions/lightgbm_direct.csv": "5e568c0e6e96d568baea6a6f6b0779d207c790d52f97c0523e08ba4dac504eb2",
+    "hourly/test_predictions/residual_hybrid.csv": "d9135a218eed0a57a67c71fb63872f850ff220985716c1228055d5e752ea03e7",
+    "hourly/test_predictions/ridge_direct.csv": "eb16cfc171098d329c392ad16945cfaf5e9334891e7b6259245af84f8d6a6909",
     "hourly/test_reconciled_predictions/lightgbm_direct.csv": "43b1e23bb18923984ec73f06af8e26cde490c26d1aed040b5560d4c19d977fed",
     "hourly/test_reconciled_predictions/residual_hybrid.csv": "eaeaf3c6b145aa51fed98a4cc8ff1b73d01a682acf8d71dad279fd928e6fc2f5",
     "hourly/test_reconciled_predictions/ridge_direct.csv": "52457b9c8118107eec477c29abc4bfedc109341fc641faea1a9b929c764139d6",
-    "interval_predictions/ensemble.csv": "daf63fbbcb9218644fbad5a3bd979dfb3220304323cebea761a0670d51d9be0d",
-    "metrics/daily_comparison.csv": "ef220f2209485be0ec0cac02884115c234fb073cb0a4cdf6cd7240cdb87d1fb9",
+    "interval_predictions/ensemble.csv": "5f95668b74ef8efe3829d83d1b3c4ebf8741e7cb901b1d5e95e1d36bf7c38cdf",
+    "metrics/daily_comparison.csv": "c80282e3e0b98b2c8a7356f5c66fb9e2a71225d08a4b619cd32176647f300d9a",
     "metrics/error_slices.csv": "e9bf8f22aba5b615b57f036b41828fdcc554fcf99647c8c22330ce414820415c",
     "metrics/generalization_gap.csv": "280124a0211af49846dc636f3089b215d2230e4deb8a93697b766ec0f8691f4e",
-    "metrics/interval_coverage.csv": "65eb5f83d0cf30234dbde6b6409188ebe25bed2299a1c507cae763e682772b01",
-    "metrics/low_risk_improvement_decision.json": "7f5aaa5dc49c155ca843645a2265164371a8d9b04c57f756273030f8fe756a92",
+    "metrics/interval_coverage.csv": "2bb737900f9a71a787c32277dd77a34f254915e8d3db48e7dd554dbf408a9c82",
+    "metrics/low_risk_improvement_decision.json": "8ffa7124c33c4a696ace34b31844495b6f308e699cce6af5471e4d25c7b09adb",
     "metrics/rolling_origin_mape.csv": "5ad27b9ccde3057f7986128cfb3a3303b9aee6ca61fbb61b9fc5ef2669ba5e21",
-    "predictions/ensemble.csv": "b9cb7cc968c37d15735a2f226a923e744509d25c51f8970b299d62247f106e2a"
+    "predictions/ensemble.csv": "1866b619856583cae7cfccafdd0a126017123109a031aa013a06b914d4fd00b0"
   },
-  "source_revision": "555cfd0381a880ca22264e98fd94aa4004efec7e",
+  "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
   "study": {
     "load_patterns": {
       "month": [
@@ -14180,7 +14180,7 @@
           "evaluation_period": "retrospective_final",
           "model": "SARIMAX",
           "n": 216,
-          "protocol_fingerprint": "ad06df07cbd85bfadb52a15bbf461a085cb81086876105a09bd3b4f52b8435d7",
+          "protocol_fingerprint": "fa9fe7e05b71207669ae2f8af87db30e70d16d09b255a84a30a97635ae1c1b00",
           "start": "2026-01-01",
           "stream_id": "daily/SARIMAX"
         },
@@ -14194,7 +14194,7 @@
           "evaluation_period": "retrospective_final",
           "model": "ensemble",
           "n": 216,
-          "protocol_fingerprint": "b6f14a50c9327083ebfb68402a7348d02a6c38bfe8a1bc8d5dc6ceb33315bba3",
+          "protocol_fingerprint": "ef5d669f14abd4e8b58a35cbd0c4c500fb070817dd4e12a227e9b218b1719247",
           "start": "2026-01-01",
           "stream_id": "daily/ensemble"
         },
@@ -14208,7 +14208,7 @@
           "evaluation_period": "retrospective_final",
           "model": "lightgbm",
           "n": 216,
-          "protocol_fingerprint": "7bda423aa6903d0e0a5c83b353c99869598a9ebd508cf15c87aa91de0cecd245",
+          "protocol_fingerprint": "769fa6832f39a6129ff1239673a33f8a9c301cfb3624597ae4461b86e6c9a333",
           "start": "2026-01-01",
           "stream_id": "daily/lightgbm"
         },
@@ -14222,7 +14222,7 @@
           "evaluation_period": "retrospective_final",
           "model": "naive_1d",
           "n": 216,
-          "protocol_fingerprint": "33a73a06609e83af6afa5e0f14f7d27a6608a6951602e3258b32ad6931b236ce",
+          "protocol_fingerprint": "97ef6105855f1af94528059e1f4053d53e36716f1ea460026547624f6df51293",
           "start": "2026-01-01",
           "stream_id": "daily/naive_1d"
         },
@@ -14236,7 +14236,7 @@
           "evaluation_period": "retrospective_final",
           "model": "random_forest",
           "n": 216,
-          "protocol_fingerprint": "5dbad1e7dd4101001c65d66ef843a102a760b9b14e1f446ed4d9c8112eb62aa4",
+          "protocol_fingerprint": "b0fb08198626eae48b9c604c08ad27a856382a4a859155fed8b51d43e7297838",
           "start": "2026-01-01",
           "stream_id": "daily/random_forest"
         },
@@ -14250,7 +14250,7 @@
           "evaluation_period": "retrospective_final",
           "model": "seasonal_naive_7d",
           "n": 216,
-          "protocol_fingerprint": "7a2f483f837c6ce9036b7ae8e035b4b4ea8a957296321dad5455ce3dcfcd0ecf",
+          "protocol_fingerprint": "3cbc3e2b714ea87d4a678055c8350ddecaec64b4501cb12c61b57ca1fc52996e",
           "start": "2026-01-01",
           "stream_id": "daily/seasonal_naive_7d"
         },
@@ -14264,7 +14264,7 @@
           "evaluation_period": "retrospective_final",
           "model": "xgboost",
           "n": 216,
-          "protocol_fingerprint": "2445107e1efa6ccee02fe353ce2198b0bcc874cf5843d818665734c12f5909fb",
+          "protocol_fingerprint": "137a68682b0ef90872e401a1297b5774742781ebf1e860342e58e6cd639110dc",
           "start": "2026-01-01",
           "stream_id": "daily/xgboost"
         }
@@ -16782,7 +16782,7 @@
           "monitoring_scope": "prequential_monitoring",
           "month": "2026-01",
           "n": 17856,
-          "protocol_fingerprint": "2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7",
+          "protocol_fingerprint": "bf649cb8b18e90d447fef2a69314fe61f526d6ab91313c3c5b32755d30221258",
           "stream_id": "hourly/point/residual_hybrid"
         },
         {
@@ -16793,7 +16793,7 @@
           "monitoring_scope": "prequential_monitoring",
           "month": "2026-02",
           "n": 16128,
-          "protocol_fingerprint": "2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7",
+          "protocol_fingerprint": "bf649cb8b18e90d447fef2a69314fe61f526d6ab91313c3c5b32755d30221258",
           "stream_id": "hourly/point/residual_hybrid"
         },
         {
@@ -16804,7 +16804,7 @@
           "monitoring_scope": "prequential_monitoring",
           "month": "2026-03",
           "n": 17832,
-          "protocol_fingerprint": "2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7",
+          "protocol_fingerprint": "bf649cb8b18e90d447fef2a69314fe61f526d6ab91313c3c5b32755d30221258",
           "stream_id": "hourly/point/residual_hybrid"
         },
         {
@@ -16815,7 +16815,7 @@
           "monitoring_scope": "prequential_monitoring",
           "month": "2026-04",
           "n": 17280,
-          "protocol_fingerprint": "2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7",
+          "protocol_fingerprint": "bf649cb8b18e90d447fef2a69314fe61f526d6ab91313c3c5b32755d30221258",
           "stream_id": "hourly/point/residual_hybrid"
         },
         {
@@ -16826,7 +16826,7 @@
           "monitoring_scope": "prequential_monitoring",
           "month": "2026-05",
           "n": 17856,
-          "protocol_fingerprint": "2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7",
+          "protocol_fingerprint": "bf649cb8b18e90d447fef2a69314fe61f526d6ab91313c3c5b32755d30221258",
           "stream_id": "hourly/point/residual_hybrid"
         },
         {
@@ -16837,7 +16837,7 @@
           "monitoring_scope": "prequential_monitoring",
           "month": "2026-06",
           "n": 17280,
-          "protocol_fingerprint": "2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7",
+          "protocol_fingerprint": "bf649cb8b18e90d447fef2a69314fe61f526d6ab91313c3c5b32755d30221258",
           "stream_id": "hourly/point/residual_hybrid"
         },
         {
@@ -16848,7 +16848,7 @@
           "monitoring_scope": "prequential_monitoring",
           "month": "2026-07",
           "n": 17856,
-          "protocol_fingerprint": "2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7",
+          "protocol_fingerprint": "bf649cb8b18e90d447fef2a69314fe61f526d6ab91313c3c5b32755d30221258",
           "stream_id": "hourly/point/residual_hybrid"
         },
         {
@@ -16859,7 +16859,7 @@
           "monitoring_scope": "prequential_monitoring",
           "month": "2026-08",
           "n": 2304,
-          "protocol_fingerprint": "2d1ac058d4b3b4a9e84365f290b52ddacd237a5624a7bfd9410ed16be0b75ff7",
+          "protocol_fingerprint": "bf649cb8b18e90d447fef2a69314fe61f526d6ab91313c3c5b32755d30221258",
           "stream_id": "hourly/point/residual_hybrid"
         }
       ]
