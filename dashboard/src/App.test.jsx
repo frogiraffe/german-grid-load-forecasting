@@ -228,9 +228,15 @@ describe("builder-owned dashboard contract", () => {
 
     const opening = document.querySelector(".opening-figure [data-chart-frame]");
     const tableRows = opening.querySelectorAll("tbody tr").length;
-    expect(within(opening).getByRole("button", { name: "Reset zoom" })).toBeTruthy();
-    expect(opening.querySelector("[data-chart-brush]")).toBeTruthy();
-    fireEvent.click(within(opening).getByRole("button", { name: "Reset zoom" }));
+    const resetZoom = within(opening).queryByRole("button", { name: "Reset zoom" });
+    if (tableRows > 12) {
+      expect(resetZoom).toBeTruthy();
+      expect(opening.querySelector("[data-chart-brush]")).toBeTruthy();
+      fireEvent.click(resetZoom);
+    } else {
+      expect(resetZoom).toBeNull();
+      expect(opening.querySelector("[data-chart-brush]")).toBeNull();
+    }
     expect(opening.querySelectorAll("tbody tr")).toHaveLength(tableRows);
 
     const demand = document.querySelector("#load-patterns");
