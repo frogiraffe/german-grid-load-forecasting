@@ -18,7 +18,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import shap
 
 from loadfc.config import Config
 from loadfc.features.assemble import build_features, exog_columns, feature_matrix
@@ -38,6 +37,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="config.yaml")
     args = parser.parse_args()
+    import shap
+
     cfg = Config.from_yaml(Path(args.config))
 
     dataset = pd.read_parquet(cfg.path("processed_dir") / "dataset.parquet")

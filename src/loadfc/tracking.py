@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import subprocess
 from collections.abc import Iterable, Mapping
 from pathlib import Path
@@ -30,8 +29,6 @@ def sha256_file(path: Path) -> str:
 def git_commit(root: Path) -> str:
     """Resolve the source revision without requiring GitPython."""
 
-    if revision := os.environ.get("GITHUB_SHA"):
-        return revision
     result = subprocess.run(
         ["git", "rev-parse", "HEAD"],
         cwd=root,
