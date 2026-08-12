@@ -37,7 +37,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -57,7 +57,7 @@
         ]
       },
       "stream_id": "daily/SARIMAX",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-48z9j9kw/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/ensemble": {
@@ -90,7 +90,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -110,7 +110,7 @@
         ]
       },
       "stream_id": "daily/ensemble",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-48z9j9kw/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/lightgbm": {
@@ -162,7 +162,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -182,7 +182,7 @@
         ]
       },
       "stream_id": "daily/lightgbm",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-48z9j9kw/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/naive_1d": {
@@ -208,7 +208,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -228,7 +228,7 @@
         ]
       },
       "stream_id": "daily/naive_1d",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-48z9j9kw/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/random_forest": {
@@ -277,7 +277,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -297,7 +297,7 @@
         ]
       },
       "stream_id": "daily/random_forest",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-48z9j9kw/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/seasonal_naive_7d": {
@@ -323,7 +323,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -343,7 +343,7 @@
         ]
       },
       "stream_id": "daily/seasonal_naive_7d",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-48z9j9kw/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "daily/xgboost": {
@@ -394,7 +394,7 @@
       "rationale": "Validation metrics choose configured candidates; calibration and final do not tune them.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -414,7 +414,7 @@
         ]
       },
       "stream_id": "daily/xgboost",
-      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-s_z2nztc/results/metrics/validation_metrics.csv",
+      "validation_selection_evidence": "/tmp/german-grid-load-public-ySjvx9/.results-staging-48z9j9kw/results/metrics/validation_metrics.csv",
       "weather_strategy": "available_day_ahead"
     },
     "hourly/anchor/lightgbm": {
@@ -463,7 +463,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -531,7 +531,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -599,7 +599,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -667,7 +667,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
@@ -747,7 +747,7 @@
       "rationale": "Validation selects hourly and anchor models; calibration and final do not reselect.",
       "schema_version": 1,
       "seed": 42,
-      "source_revision": "4dacfc64c5bff25b66263ced93d6c14cbc1257b1",
+      "source_revision": "75bdc9e063dcd91625eb61cb084cc7c236494985",
       "splits": {
         "calibration": [
           "2025-07-01",
