@@ -16,7 +16,7 @@ forecast is issued?
 The dashboard connects the forecasts, error patterns, uncertainty intervals, and model comparisons
 in one place.
 
-[Explore the dashboard](./docs/) · [Read the model card](./docs/MODEL_CARD.md) ·
+[Explore the dashboard](https://frogiraffe.github.io/german-grid-load-forecasting/) · [Read the model card](./docs/MODEL_CARD.md) ·
 [Read the technical report](./report/technical-report-en.pdf)
 
 ## Features

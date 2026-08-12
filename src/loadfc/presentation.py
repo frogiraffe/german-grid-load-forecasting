@@ -555,7 +555,7 @@ def _markdown_block(values: PresentationValues) -> str:
 - **Hourly forecast:** {model_display_name(values.hourly_model)}. Daily-total alignment reduced MAE from {values.hourly_raw_mae:.1f} MW to {values.hourly_reconciled_mae:.1f} MW ({change:+.2f}%). The result contains n={values.hourly_n} hourly values. The daily model was {model_display_name(values.daily_anchor_model)}.
 - **Model comparison:** Validation MAE was {values.hourly_validation_mae:.1f} MW for {model_display_name(values.hourly_model)} and {values.hourly_candidate_validation_mae:.1f} MW for {model_display_name(values.hourly_candidate_model)}. The paired difference on the final data was {values.bootstrap_difference:+.1f} MW. Its 95% range was [{values.bootstrap_lower:.1f}, {values.bootstrap_upper:.1f}] MW across {values.bootstrap_n_days} days. This range includes zero, so the data do not show a clear winner.
 - **Uncertainty ranges:** {intervals}.
-- **Release check:** source `{values.source_revision}`; daily protocol `{values.daily_protocol_fingerprint}`; hourly protocol `{values.hourly_protocol_fingerprint}`; bundle `{values.bundle_fingerprint}`.
+<!-- provenance: source `{values.source_revision}`; daily protocol `{values.daily_protocol_fingerprint}`; hourly protocol `{values.hourly_protocol_fingerprint}`; bundle `{values.bundle_fingerprint}` -->
 - **Scope:** The final period was already examined. These results describe this data period and do not state future accuracy.
 """
 
@@ -579,6 +579,7 @@ def _tex_block(values: PresentationValues) -> str:
 \\begin{{itemize}}
 {rendered}
 \\end{{itemize}}
+% provenance: source {values.source_revision}; daily protocol {values.daily_protocol_fingerprint}; hourly protocol {values.hourly_protocol_fingerprint}; bundle {values.bundle_fingerprint}
 """
 
 

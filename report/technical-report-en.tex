@@ -53,17 +53,21 @@
 \begin{titlepage}
 \color{navy}
 \vspace*{1.2cm}
-{\Large\textbf{TECHNICAL REPORT}}\par
-\vspace{0.6cm}
-{\fontsize{30}{36}\selectfont\bfseries German Grid-Load Forecasting\par}
+{\fontsize{27}{33}\selectfont\bfseries Leakage-safe daily and hourly forecasting of German grid load\par}
 \vspace{0.5cm}
-{\Large Daily and hourly day-ahead forecasts}\par
+{\Large A retrospective study with forecast-origin weather, reconciliation, and conformal intervals\par}
 \vspace{1.2cm}
-\colorbox{pale}{\parbox{0.88\textwidth}{
-The system combines a daily forecast and an hourly profile. It uses
-hierarchical reconciliation and conformal prediction intervals. Release
-manifests bind the reported evidence to the evaluated source revision.
-}}
+\begin{abstract}
+This study asks how accurately German electricity demand can be forecast one day ahead when every
+predictor is restricted to information available at forecast issue time. We compare statistical and
+tree-based daily models, three direct hourly architectures, daily--hourly reconciliation, and three
+forms of uncertainty quantification. Model choice is fixed on a chronological validation period and
+a separate calibration period is used for interval construction. On the previously inspected final
+period, the daily ensemble achieved \BestMAPE{} MAPE and \BestMASE{} MASE. Reconciliation reduced
+hourly MAE from \RawHourlyMAE{} MW to \ReconciledHourlyMAE{} MW. A paired day-block bootstrap did
+not distinguish the residual hybrid from direct LightGBM. Adaptive 90\% intervals reached
+\AdaptiveCoverage{} empirical coverage, but this retrospective result does not provide a prospective guarantee.
+\end{abstract}
 \vfill
 \begin{tabular}{@{}ll}
 \textbf{Author} & chiki · \href{mailto:work@chiki.dev}{work@chiki.dev}\\
@@ -71,10 +75,18 @@ manifests bind the reported evidence to the evaluated source revision.
 \vspace{0.8cm}
 \end{titlepage}
 
-\section*{Summary}
+\section{Introduction}
 
-The system forecasts realized German electricity grid load. It produces daily
-and hourly day-ahead forecasts.
+Day-ahead load forecasts inform scheduling and operational planning, yet a retrospective model can
+appear stronger than it is if it uses weather observations that were unavailable when the forecast
+would have been issued. This study treats forecast origin as part of the prediction problem. The
+central question is whether the next local day can be predicted from information available one day
+earlier.
+
+The analysis compares daily statistical and tree models, three direct hourly designs, a constraint
+that aligns hourly profiles with an independently forecast daily mean, and three interval methods.
+The dashboard offers a compact tour of the evidence. This report develops the experimental
+assumptions, statistical comparisons, error structure, and limitations in greater depth.
 
 % loadfc:generated-start
 \subsection*{Release results}
@@ -89,21 +101,27 @@ and hourly day-ahead forecasts.
 \end{itemize}
 % loadfc:generated-end
 
-\section{Data and evaluation}
+\section{Data and evaluation design}
 
-SMARD supplies realized grid-load data. Open-Meteo supplies archived weather
-forecasts.
+The target is realized German electricity consumption reported by SMARD (filter 410), expressed in
+MW. Hourly observations are normalized in UTC and mapped to the Europe/Berlin local calendar.
+Open-Meteo supplies temperature at 2 m and wind speed at 10 m for Berlin, Hamburg, Munich, Cologne,
+and Frankfurt. Population weights combine these series into a national weather proxy. It captures
+broad exposure rather than regional grid heterogeneity.
 
-The target is realized electricity consumption in MW. Residual load is outside
-the report scope.
+The dataset contains 2,760 daily observations from 14 January 2019 through 4 August 2026. From 20
+January 2024 onward, weather features use archived forecasts issued 24 hours before the target day.
+Earlier dates use the previous day's realized weather because an equivalent forecast archive is
+unavailable. The two ranges therefore differ in weather-information quality.
 
-Weather features use forecasts from 24 hours before valid time. Earlier data
-uses previous-day observed weather.
+The chronological split is training through 2023, validation from January 2024 through June 2025,
+calibration from July through December 2025, and final evaluation from January through 4 August
+2026. Model and feature decisions use validation evidence only. Calibration outcomes set interval
+widths but do not select the point model. The final period contains \FinalN{} local days and
+\HourlyN{} hourly observations. Because that period was inspected during development, it is reported
+as retrospective evidence rather than an untouched holdout.
 
-The configured chronological stages are training, validation, calibration, and
-retrospective final. Validation selects models before later evidence is inspected.
-
-\section{Forecast architecture}
+\section{Forecasting methods}
 
 \begin{center}
 \setlength{\fboxsep}{8pt}
@@ -116,14 +134,27 @@ retrospective final. Validation selects models before later evidence is inspecte
 \end{tabular}
 \end{center}
 
-The hourly evaluation compares residual hybrid, direct LightGBM, and direct
-Ridge. Each model predicts valid hours directly.
+Daily predictors include one- and seven-day load lags, weekly and annual Fourier terms, holidays,
+weekend and bridge-day indicators, heating and cooling degree variables, and indicators for the 2020
+COVID disruption and the 2022--2023 energy crisis. Candidate forecasts comprise SARIMAX, XGBoost,
+LightGBM, Random Forest, two persistence baselines, and an ensemble of SARIMAX, XGBoost, and
+LightGBM fixed from validation evidence.
 
-The features include horizon, lag-24, lag-168, calendar, weather, and Fourier
-terms. Direct prediction prevents recursive error propagation.
+For observations $y_t$ and forecasts $\hat y_t$, the main measures are
+\[
+\mathrm{MAE}=n^{-1}\sum_{t=1}^{n}|y_t-\hat y_t|,
+\qquad
+\mathrm{MAPE}=100n^{-1}\sum_{t=1}^{n}\left|\frac{y_t-\hat y_t}{y_t}\right|.
+\]
+MASE scales absolute error by the in-sample one-step naive error; values below one improve on that
+scale reference. RMSE is retained to reveal sensitivity to large errors.
 
-Validation MAE selects the daily anchor. The final model uses only data before
-calibration.
+The hourly evaluation compares residual hybrid, direct LightGBM, and direct Ridge. All candidates
+predict valid horizons directly and use horizon, 24- and 168-hour lags, weather, calendar, and
+Fourier features. Direct Ridge provides a linear reference. Direct LightGBM fits the nonlinear
+relationship in one model. The hybrid first estimates a linear trend and then fits LightGBM to its
+residuals. Direct prediction avoids recursive error accumulation. Reconciled validation MAE selects
+the hourly model; later rankings do not revise that decision.
 
 \section{Reconciliation}
 
@@ -144,28 +175,101 @@ daily forecast.
 The code supports complete local days with 23, 24, or 25 hours. It rejects
 invalid predictions and incomplete days.
 
-The generated release evidence reports raw and reconciled MAE from the same
-retrospective-final forecast rows.
+Raw and reconciled MAE use the same forecast rows, so the difference isolates the daily constraint
+rather than a change in sample. Reconciliation is performed before conformal scores are calculated.
 
 \section{Model selection}
 
-The release keeps the validation-selected model. Later candidate comparisons
-are retrospective evidence and do not change that selection.
+The release keeps the validation-selected model. Later candidate comparisons are descriptive and do
+not change that selection.
 
-The paired bootstrap uses one MAE difference for each local day and resamples
-the paired day blocks. The generated release evidence reports its result.
+The paired bootstrap resamples complete local days, preserving dependence among hourly errors within
+a day. Its estimand is candidate minus reference MAE. A 95\% interval containing zero does not
+establish a clear difference between the models.
 
 \section{Prediction intervals}
 
-The point, daily, and quantile models use data before calibration. The models
-stay fixed during calibration and retrospective-final evaluation.
+The point, daily, and quantile models use data before calibration. The models stay fixed during
+calibration and final evaluation. Symmetric split conformal intervals use frozen calibration
+residuals. The adaptive variant updates its level sequentially with $\gamma=0.01$ and bounded
+history. CQR estimates conditional lower and upper quantiles before conformal calibration.
 
 Reconciliation occurs before score calculation. Both interval methods use the
 same reconciled point forecasts.
 
-The current implementation keeps all models frozen. Coverage is empirical; adaptive intervals are prequential monitoring without an unconditional time-series guarantee.
+Coverage, mean width, and interval score are considered together because coverage alone can be
+increased by producing uninformatively wide ranges. Adaptive coverage is prequential monitoring
+evidence and does not constitute an unconditional time-series guarantee under serial dependence.
 
-\section{Controls}
+\section{Results}
+
+\subsection{Daily forecasts}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Daily performance on the final evaluation period.}
+\begin{tabular}{lrrrr}
+\toprule
+Model & RMSE (MW) & MAE (MW) & MAPE (\%) & MASE\\
+\midrule
+\TestRows
+\bottomrule
+\end{tabular}
+\end{table}
+
+The ensemble produced the lowest final-period error: MAE \BestMAE{} MW, MAPE \BestMAPE{}, and
+MASE \BestMASE{}. Its MAPE was about 73\% below the previous-day baseline (7.025\%) and about 67\%
+below the weekly seasonal baseline (5.575\%). It also led on validation MAPE (1.993\%), so the
+reported choice is consistent with the selection period rather than being chosen from the final
+ranking. Ensemble MAPE changed from 1.993\% on validation to 1.867\% on the final period; this is
+reassuring for this sample but does not establish stability beyond August 2026.
+
+\subsection{Hourly forecasts and reconciliation}
+
+The residual hybrid had reconciled validation MAE \HourlyValidationSelectedMAE{} MW, compared with
+\HourlyValidationLightGBMMAE{} MW for direct LightGBM, and was fixed as the selected hourly model.
+On the final period, reconciliation reduced its MAE from \RawHourlyMAE{} MW to
+\ReconciledHourlyMAE{} MW, an improvement of \ReconciliationGain{}.
+
+Direct LightGBM recorded final reconciled MAE \HourlyTestLightGBMMAE{} MW, slightly below the
+selected hybrid's \HourlyTestSelectedMAE{} MW. The paired day-block estimate of their MAE difference
+was \BootstrapDifference{} MW, with a 95\% interval of [\BootstrapLower{}, \BootstrapUpper{}] MW
+across \BootstrapN{} days. The estimated probability that the candidate was better was
+\BootstrapProbability{}. The evidence supports practical equivalence at the resolution of this
+experiment, not a post-hoc model switch.
+
+\subsection{Prediction intervals}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Hourly 90\% interval performance on \HourlyN{} observations.}
+\begin{tabular}{lrrr}
+\toprule
+Method & Coverage & Mean width (MW) & Interval score (MW)\\
+\midrule
+Symmetric & \SymmetricCoverage & \SymmetricWidth & \SymmetricIntervalScore\\
+Adaptive & \AdaptiveCoverage & \AdaptiveWidth & \AdaptiveIntervalScore\\
+CQR & \CQRCoverage & \CQRWidth & \CQRIntervalScore\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The fixed symmetric interval under-covered at \SymmetricCoverage{}. CQR was wider but still
+under-covered at \CQRCoverage{}. The adaptive method reached \AdaptiveCoverage{} and achieved the
+lowest interval score, although its mean width rose to \AdaptiveWidth{} MW. Adaptation improved the
+observed calibration--sharpness trade-off in this period without supplying a future guarantee.
+
+\subsection{Weather contribution and error structure}
+
+Replacing forecast-origin weather with a previous-day persistence proxy increased ensemble MAPE
+from 1.867\% to 1.901\%, a 0.034 percentage-point difference. Weather adds measurable value, but the
+small change shows that recent and seasonal load structure carries most of the signal at this
+national one-day horizon. Errors are not assumed independent across hours: model comparison uses
+day blocks, while interval and drift diagnostics retain monthly and horizon slices.
+
+\section{Implementation safeguards}
 
 \subsection{Data validation}
 
@@ -184,32 +288,52 @@ uses \texttt{Timedelta(hours=1)} to calculate elapsed hours.
 A regression test uses \texttt{datetime64[us]}. It verifies the time scale and
 the weekly Fourier phase.
 
-\section{Verification and limits}
+\section{Discussion}
 
-\begin{verbatim}
-uv run ruff check src scripts tests
-uv run mypy src
-uv run pytest --cov=loadfc --cov-report=term-missing --cov-fail-under=80
-uv run python scripts/validate_results.py
-\end{verbatim}
+Three conclusions follow from the experiment. A modest ensemble supplies an accurate daily anchor
+without adding complexity after validation. The daily constraint improves the selected hourly
+forecast while preserving its intraday shape. Finally, two hourly tree-based designs are too close
+to justify claiming that either is generally superior. This negative result favors retaining the
+validation choice instead of tuning against inspected outcomes.
 
-Five cities represent national weather exposure. Distribution shift can change
-conformal coverage.
+The weather ablation qualifies the role of exogenous inputs. Forecast-origin weather improves error,
+but lagged demand and calendar structure dominate at this scale. More spatial detail may matter
+during regional extremes, yet testing that proposition requires regional load targets or a separate
+aggregation study rather than simply adding stations.
 
-A production service requires scheduling, access control, service-level
-objectives, and rollback rules.
+\section{Limitations}
+
+The evaluation period was inspected during development, so its numerical results describe this
+release and are not prospective accuracy claims. The pre-2024 weather fallback is weaker than an
+archived issue-time forecast. Five population-weighted cities cannot represent every regional
+weather or industrial-load effect. Structural-break indicators mark known periods but do not
+identify causal effects. SMARD revisions, market changes, and distribution shift can alter point
+error and interval coverage.
+
+The study concerns offline day-ahead forecasting. It does not test data-arrival latency, scheduler
+reliability, access control, or service-level objectives. Those are deployment questions and should
+not be inferred from a retrospective model evaluation.
+
+\section{Reproducibility}
+
+The repository fixes split dates, feature definitions, parameters, and random seed in
+\texttt{config.yaml}. A clean run downloads public inputs, rebuilds features, evaluates the frozen
+protocols, compiles this report, validates artifact hashes, and emits the bounded dashboard payload.
+Detailed CSV tables are generated on demand by the manual GitHub Actions workflow rather than stored
+in Git. Source, protocol, and artifact hashes remain available in
+\texttt{results/run\_summary.json} and \texttt{results/evaluation\_protocol.json}; they are omitted
+from the scientific narrative because they support verification rather than interpretation.
 
 \section*{References}
 
 \begin{itemize}
 \footnotesize
-  \item Bundesnetzagentur, SMARD: \url{https://www.smard.de/en}
-  \item Open-Meteo Previous Runs API:
-        \url{https://open-meteo.com/en/docs/previous-runs-api}
-  \item Hyndman et al., ``Optimal Combination Forecasts for Hierarchical Time Series''.
-  \item Romano et al., ``Conformalized Quantile Regression''.
-  \item Gibbs and Candès, ``Adaptive Conformal Inference Under Distribution Shift''.
-  \item Ke et al., ``LightGBM: A Highly Efficient Gradient Boosting Decision Tree''.
+  \item Bundesnetzagentur. SMARD electricity-market data. \url{https://www.smard.de/en}
+  \item Open-Meteo. Historical Weather and Previous Runs APIs. \url{https://open-meteo.com/en/docs/previous-runs-api}
+  \item Hyndman, R. J. et al. ``Optimal combination forecasts for hierarchical time series.'' \emph{Computational Statistics \& Data Analysis}, 2011.
+  \item Ke, G. et al. ``LightGBM: A highly efficient gradient boosting decision tree.'' \emph{Advances in Neural Information Processing Systems}, 2017.
+  \item Romano, Y. et al. ``Conformalized quantile regression.'' \emph{Advances in Neural Information Processing Systems}, 2019.
+  \item Gibbs, I. and Candès, E. ``Adaptive conformal inference under distribution shift.'' \emph{Advances in Neural Information Processing Systems}, 2021.
 \end{itemize}
 
 \end{document}
