@@ -1,4 +1,4 @@
-# German Grid-Load Forecasting (`loadfc`)
+# German Grid-Load Forecasting
 
 A daily and 24-hour German electricity-load forecasting case study built around a practical
 question: how accurately can grid demand be predicted using only information available when the
