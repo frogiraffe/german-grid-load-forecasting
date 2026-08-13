@@ -40,12 +40,7 @@ def test_calendar_features_frame_has_all_columns():
         "bridge_day",
         "pre_holiday",
         "post_holiday",
-        "is_covid",
-        "is_energy_crisis",
     ]
-    assert feats.loc[date(2020, 4, 1), "is_covid"] == 1
-    assert feats.loc[date(2022, 10, 1), "is_energy_crisis"] == 1
-    assert feats.loc[date(2024, 7, 15), "is_covid"] == 0
 
 
 def test_pre_and_post_holiday_indicators():

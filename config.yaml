@@ -42,9 +42,6 @@ features:
   fourier:
     - { name: "week", period: 7,      harmonics: 1 }
     - { name: "year", period: 365.25, harmonics: 1 }
-  structural_breaks:
-    is_covid:        { start: "2020-03-15", end: "2020-06-15" }
-    is_energy_crisis: { start: "2022-09-01", end: "2023-03-31" }
   lags: [1, 7]
   hourly_lags: [24, 168]
 

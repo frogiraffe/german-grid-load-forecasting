@@ -1,6 +1,6 @@
 # German Grid-Load Forecasting
 
-A daily and 24-hour German electricity-load forecasting case study built around a practical
+A daily and fixed 24-hour-ahead German electricity-load forecasting case study built around a practical
 question: how accurately can grid demand be predicted using only information available when the
 forecast is issued?
 
@@ -22,11 +22,11 @@ in one place.
 ## Features
 
 - **Data** — Fetches German net load from SMARD (`filter: 410`, hourly, `data/raw/`) and weather from Open-Meteo archive and previous-runs forecast APIs. Uses a day-ahead weather strategy: archived forecasts issued 24 hours before the target day from 2024 onward; earlier rows fall back to the previous day's observation (`config.yaml` -> `features.weather_strategy`).
-- **Features** — Calendar features (holidays via the `holidays` package), Fourier terms (weekly and yearly), HDD/CDD from temperature, lagged load (`lags: [1, 7]` daily, `[24, 168]` hourly), and structural-break indicators (COVID 2020, energy crisis 2022/23).
+- **Features** — Calendar features (holidays via the `holidays` package), Fourier terms (weekly and yearly), HDD/CDD from temperature, and lagged load (`lags: [1, 7]` daily, `[24, 168]` hourly).
 - **Models** — Daily models: SARIMAX, XGBoost, LightGBM, RandomForest, and a frozen ensemble of SARIMAX + XGBoost + LightGBM selected on the 2024-2025 validation period. Hourly models: a residual-hybrid forecaster (linear trend plus LightGBM residual model), a direct multi-horizon LightGBM model, and a direct ridge model (`src/loadfc/models/`).
 - **Uncertainty quantification** — Fixed and sequentially adaptive conformal prediction intervals: symmetric split conformal per horizon, CQR, and adaptive conformal with calibration window and gamma drift (`src/loadfc/evaluation/conformal.py`).
 - **Evaluation** — Metrics (MAE, RMSE, MAPE, MASE), baselines (naive 1-day, seasonal naive 7-day), day-block bootstrap ablations (rolling origin), Diebold-Mariano tests, error slices, weather ablations, and drift analysis (`src/loadfc/evaluation/`).
-- **Provenance** — Release manifests bind the source revision, evaluation protocols, generated result tables, dashboard payload, and report artifacts with SHA-256 hashes (`src/loadfc/tracking.py`).
+- **Reproducibility** — Release manifests keep generated tables, the dashboard, and the report tied to the same committed experiment (`src/loadfc/tracking.py`).
 - **Report** — LaTeX technical report generated from run outputs (`report/technical-report-en.tex`, compiled with Tectonic).
 
 ## Quick start
@@ -72,6 +72,9 @@ docs/                        Technical design notes
 ```
 
 Data split (`config.yaml`): train through 2023-12-31, validation 2024-01-01 to 2025-06-30, calibration 2025-07-01 to 2025-12-31, and retrospective final evaluation 2026-01-01 to 2026-08-04.
+
+The hourly headline uses only horizon-24 rows: each valid hour is forecast exactly 24 hours
+earlier. It is not a common-origin day-ahead profile in which one issue time produces all 24 hours.
 
 ## Results
 

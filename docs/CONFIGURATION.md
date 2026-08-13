@@ -56,7 +56,6 @@ features:
   hdd_threshold: 18.0
   cdd_threshold: 22.0
   fourier: [{name: "week", period: 7, harmonics: 1}]
-  structural_breaks: {}
   lags: [1, 7]
   hourly_lags: [24, 168]
 models:
@@ -152,14 +151,11 @@ chunk URLs.
 | `hdd_threshold` | Yes | `18.0` | none | Heating-degree threshold. |
 | `cdd_threshold` | Yes | `22.0` | none | Cooling-degree threshold. |
 | `fourier` | Yes | weekly and yearly entries | none | Seasonal terms; each entry requires `name`, `period`, and `harmonics`. |
-| `structural_breaks` | No | COVID and energy-crisis windows | built-in windows | Overrides inclusive calendar-indicator windows by `start` and `end`. |
 | `lags` | Yes | `[1, 7]` | none | Daily target lags. |
 | `hourly_lags` | No | `[24, 168]` | `[24, 168]` | Hourly target lags. |
 
 Current Fourier entries are `week` (`period: 7`, `harmonics: 1`) and `year`
-(`period: 365.25`, `harmonics: 1`). Current structural-break entries are
-`is_covid` (`2020-03-15` through `2020-06-15`) and `is_energy_crisis`
-(`2022-09-01` through `2023-03-31`).
+(`period: 365.25`, `harmonics: 1`).
 
 ### `models`
 
@@ -173,6 +169,11 @@ estimator.
 | `xgboost` | `n_estimators: 425`; `max_depth: 5`; `learning_rate: 0.04133507869002662`; `subsample: 0.7265537839619253`; `colsample_bytree: 0.8845748582218896`; `min_child_weight: 2`; `gamma: 3.2780443858087294` |
 | `lightgbm` | `n_estimators: 1137`; `max_depth: 5`; `learning_rate: 0.0068141987644542885`; `subsample: 0.8491138046425559`; `subsample_freq: 1`; `colsample_bytree: 0.8139882925367778`; `min_child_samples: 5`; `num_leaves: 18` |
 | `random_forest` | `n_estimators: 463`; `max_depth: 16`; `min_samples_split: 2`; `min_samples_leaf: 4`; `max_features: 0.9987985103162023` |
+
+These tree-model values are frozen inputs inherited from the project's earlier experimentation.
+The repository does not contain the complete search trials, so this release claims reproducibility
+from the committed parameters onward, not reproducibility of the original hyperparameter search.
+Calibration and final evaluation do not alter them.
 
 `models.sarimax.refit` accepts YAML `false`/`true` or the string `periodic`.
 `refit_period` defaults to `90` when omitted. `seed` is added as
@@ -223,8 +224,6 @@ Source-defined defaults are:
 | --- | --- |
 | `features.weather_strategy` | `persistence` |
 | `features.hourly_lags` | `[24, 168]` |
-| `features.structural_breaks.is_covid` | `2020-03-15` through `2020-06-15` |
-| `features.structural_breaks.is_energy_crisis` | `2022-09-01` through `2023-03-31` |
 | `models.sarimax.refit_period` | `90` |
 | `ensemble` | `{members: [SARIMAX, xgboost, lightgbm]}` |
 | `uncertainty` | `{calibration_days: 181, adaptive_gamma: 0.01, adaptive_window: 365}` |

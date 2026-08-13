@@ -51,12 +51,10 @@ tune, rank, or select candidates. The validation evidence path is
 | --- | --- | --- | --- |
 | Daily point forecasts | SARIMAX, XGBoost, LightGBM, RandomForest, deterministic naive baselines, and the configured ensemble | Preserve the configured SARIMAX + XGBoost + LightGBM ensemble and member streams because the 2024-01-01–2025-06-30 validation results supplied the decision. Calibration/final outcomes cannot reselect it. | `results/metrics/validation_metrics.csv`; `results/evaluation_protocol.json` stream IDs `daily/*` |
 | Hourly point forecasts | residual hybrid, direct LightGBM, and direct ridge | Preserve the validation-selected residual-hybrid choice; the existing hourly candidates remain comparison baselines, not final-block selection inputs. | Validation evidence and, once registered, `results/evaluation_protocol.json` stream IDs `hourly/*` |
-| Weather feature candidate | operational day-ahead weather vs. persistence fallback | The persistence candidate is scored on 2024-01-01–2025-06-30 only. Acceptance requires a deterministic ensemble-MAPE improvement beyond the practical tie threshold and intact protocol checks; otherwise the configured operational weather/model is preserved. | `results/metrics/persistence_weather_validation_metrics.csv`; `results/metrics/low_risk_improvement_decision.json` |
 
-The weather-candidate decision is intentionally validation-only. Retrospective
-weather differences remain descriptive evidence and cannot change the selected
-model. This single candidate does not establish causal weather value, and the
-time-series uncertainty and realized-weather limitations below still apply.
+`available_day_ahead` is part of the forecast-information definition, not a candidate selected by
+error rank. The persistence run is retained only as a descriptive weather ablation in
+`results/metrics/weather_ablation.csv`; it cannot change the canonical strategy or selected model.
 
 ## Interval evidence limits
 

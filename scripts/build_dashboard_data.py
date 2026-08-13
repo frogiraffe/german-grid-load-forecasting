@@ -21,6 +21,7 @@ from loadfc.evaluation.protocol import (  # noqa: E402
     protocol_fingerprint,
     validate_protocol_record,
 )
+from loadfc.presentation import DAILY_PRESENTATION_MODEL  # noqa: E402
 from loadfc.tracking import bundle_fingerprint, sha256_file, source_root  # noqa: E402
 from scripts.validate_results import (  # noqa: E402
     _check_descriptive_study_evidence,
@@ -146,20 +147,6 @@ def _source_hashes(results: Path, summary: dict[str, object], paths: list[Path])
     return dict(sorted(hashes.items()))
 
 
-def _selected_daily_model(results: Path, summary: dict[str, object]) -> str:
-    decision_path = results / "metrics/low_risk_improvement_decision.json"
-    if decision_path.is_file():
-        decision = json.loads(decision_path.read_text())
-        selected = decision.get("selected_model")
-        if isinstance(selected, str) and selected:
-            return selected
-        raise ValueError(f"invalid selected_model: {decision_path}")
-    metrics = summary.get("retrospective_final_metrics")
-    if isinstance(metrics, dict) and len(metrics) == 1:
-        return str(next(iter(metrics)))
-    raise ValueError("daily selected model lacks validation-only evidence")
-
-
 def _daily_payload(
     results: Path,
     summary: dict[str, object],
@@ -170,7 +157,7 @@ def _daily_payload(
     if not comparison["evaluation_period"].eq("retrospective_final").all():
         raise ValueError(f"wrong daily evidence role: {comparison_path}")
 
-    selected = _selected_daily_model(results, summary)
+    selected = DAILY_PRESENTATION_MODEL
     selected_metrics = comparison[comparison["model"].astype(str).eq(selected)]
     if len(selected_metrics) != 1:
         raise ValueError(f"daily selected model is missing or duplicated: {selected}")
@@ -252,9 +239,6 @@ def _daily_payload(
         "n": int(metric["n"]),
     }
     paths = [comparison_path, prediction_path, interval_path, coverage_path]
-    decision_path = results / "metrics/low_risk_improvement_decision.json"
-    if decision_path.is_file():
-        paths.append(decision_path)
     return forecast, interval_rows, [overview], paths
 
 
@@ -888,15 +872,6 @@ def _build_release_payload(results: Path) -> dict[str, object]:
         raise ValueError("daily interval methods are incomplete")
     hourly, hourly_overview, hourly_paths = _hourly_payload(results, records)
     study, study_paths = _study_payload(results, records)
-    decision_path = results / "metrics/low_risk_improvement_decision.json"
-    decision = json.loads(decision_path.read_text())
-    if (
-        decision.get("selected_model") != forecast["model"]
-        or decision.get("decision") not in {"accepted", "rejected"}
-        or decision.get("integrity_checks", {}).get("no_final_outcomes_used") is not True
-    ):
-        raise ValueError("invalid validation-only low-risk decision")
-
     daily_stream = f"daily/{forecast['model']}"
     selected_hourly = str(hourly["selection"]["selected_model"])
     hourly_stream = f"hourly/point/{selected_hourly}"
@@ -958,7 +933,6 @@ def _build_release_payload(results: Path) -> dict[str, object]:
         "comparison": {
             "selection": hourly["selection"],
             "bootstrap": hourly["bootstrap"],
-            "low_risk_decision": decision,
         },
         "study": study,
         "protocol": {
@@ -986,6 +960,10 @@ def _build_release_payload(results: Path) -> dict[str, object]:
         },
         "limitations": [
             {"kind": "retrospective_final", "evidence": summary["final_role"]},
+            {
+                "kind": "hourly_forecast_definition",
+                "evidence": "fixed 24-hour-ahead forecasts; hourly valid times do not share one common issue time",
+            },
             {
                 "kind": "weather_run_provenance",
                 "evidence": hourly["policies"]["weather_availability_assumption"],

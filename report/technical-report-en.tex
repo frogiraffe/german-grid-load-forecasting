@@ -53,14 +53,14 @@
 \begin{titlepage}
 \color{navy}
 \vspace*{1.2cm}
-{\fontsize{27}{33}\selectfont\bfseries Leakage-safe daily and hourly forecasting of German grid load\par}
+{\fontsize{27}{33}\selectfont\bfseries Leakage-safe daily and fixed 24-hour-ahead forecasting of German grid load\par}
 \vspace{0.5cm}
 {\Large A retrospective study with forecast-origin weather, reconciliation, and conformal intervals\par}
 \vspace{1.2cm}
 \begin{abstract}
-This study asks how accurately German electricity demand can be forecast one day ahead when every
-predictor is restricted to information available at forecast issue time. We compare statistical and
-tree-based daily models, three direct hourly architectures, daily--hourly reconciliation, and three
+This study asks how accurately German electricity demand can be forecast from a restricted
+forecast-origin information set. We compare one-day-ahead daily models, fixed 24-hour-ahead hourly
+forecasts, daily--hourly reconciliation, and three
 forms of uncertainty quantification. Model choice is fixed on a chronological validation period and
 a separate calibration period is used for interval construction. On the previously inspected final
 period, the daily ensemble achieved \BestMAPE{} MAPE and \BestMASE{} MASE. Reconciliation reduced
@@ -77,11 +77,11 @@ not distinguish the residual hybrid from direct LightGBM. Adaptive 90\% interval
 
 \section{Introduction}
 
-Day-ahead load forecasts inform scheduling and operational planning, yet a retrospective model can
+Load forecasts inform scheduling and operational planning, yet a retrospective model can
 appear stronger than it is if it uses weather observations that were unavailable when the forecast
 would have been issued. This study treats forecast origin as part of the prediction problem. The
-central question is whether the next local day can be predicted from information available one day
-earlier.
+analysis asks two related questions: how accurately the next daily mean can be predicted, and how
+accurately each valid hour can be predicted exactly 24 hours earlier.
 
 The analysis compares daily statistical and tree models, three direct hourly designs, a constraint
 that aligns hourly profiles with an independently forecast daily mean, and three interval methods.
@@ -135,8 +135,7 @@ as retrospective evidence rather than an untouched holdout.
 \end{center}
 
 Daily predictors include one- and seven-day load lags, weekly and annual Fourier terms, holidays,
-weekend and bridge-day indicators, heating and cooling degree variables, and indicators for the 2020
-COVID disruption and the 2022--2023 energy crisis. Candidate forecasts comprise SARIMAX, XGBoost,
+weekend and bridge-day indicators, and heating and cooling degree variables. Candidate forecasts comprise SARIMAX, XGBoost,
 LightGBM, Random Forest, two persistence baselines, and an ensemble of SARIMAX, XGBoost, and
 LightGBM fixed from validation evidence.
 
@@ -154,7 +153,9 @@ predict valid horizons directly and use horizon, 24- and 168-hour lags, weather,
 Fourier features. Direct Ridge provides a linear reference. Direct LightGBM fits the nonlinear
 relationship in one model. The hybrid first estimates a linear trend and then fits LightGBM to its
 residuals. Direct prediction avoids recursive error accumulation. Reconciled validation MAE selects
-the hourly model; later rankings do not revise that decision.
+the hourly model; later rankings do not revise that decision. The released hourly metrics use only
+horizon 24, so each row has its own origin at valid time minus 24 hours. They are not a common-origin
+profile issued once for the entire next local day.
 
 \section{Reconciliation}
 
@@ -269,9 +270,7 @@ small change shows that recent and seasonal load structure carries most of the s
 national one-day horizon. Errors are not assumed independent across hours: model comparison uses
 day blocks, while interval and drift diagnostics retain monthly and horizon slices.
 
-\section{Implementation safeguards}
-
-\subsection{Data validation}
+\section{Data validation}
 
 \begin{tabularx}{\textwidth}{>{\bfseries}l X}
 Load & Values must be finite and positive.\\
@@ -279,14 +278,6 @@ Weather & Values must be within configured physical ranges.\\
 Time & UTC timestamps must be unique, complete, and on the hourly grid.\\
 Evaluation & Prediction and interval indexes must match before the join.\\
 \end{tabularx}
-
-\subsection{Datetime resolution}
-
-Raw \texttt{.asi8} values depend on the pandas storage unit. The feature code
-uses \texttt{Timedelta(hours=1)} to calculate elapsed hours.
-
-A regression test uses \texttt{datetime64[us]}. It verifies the time scale and
-the weekly Fourier phase.
 
 \section{Discussion}
 
@@ -306,11 +297,11 @@ aggregation study rather than simply adding stations.
 The evaluation period was inspected during development, so its numerical results describe this
 release and are not prospective accuracy claims. The pre-2024 weather fallback is weaker than an
 archived issue-time forecast. Five population-weighted cities cannot represent every regional
-weather or industrial-load effect. Structural-break indicators mark known periods but do not
-identify causal effects. SMARD revisions, market changes, and distribution shift can alter point
+weather or industrial-load effect. SMARD revisions, market changes, and distribution shift can alter point
 error and interval coverage.
 
-The study concerns offline day-ahead forecasting. It does not test data-arrival latency, scheduler
+The hourly headline is a fixed 24-hour-ahead evaluation, not a market-style profile issued once for
+all hours of the next local day. The study concerns offline forecasting. It does not test data-arrival latency, scheduler
 reliability, access control, or service-level objectives. Those are deployment questions and should
 not be inferred from a retrospective model evaluation.
 
@@ -323,6 +314,10 @@ Detailed CSV tables are generated on demand by the manual GitHub Actions workflo
 in Git. Source, protocol, and artifact hashes remain available in
 \texttt{results/run\_summary.json} and \texttt{results/evaluation\_protocol.json}; they are omitted
 from the scientific narrative because they support verification rather than interpretation.
+
+Tree-model parameters are frozen values inherited from earlier experimentation. The complete
+historical search trials are not available, so the study is reproducible from the committed
+parameters onward but does not claim reproducibility of the original search.
 
 \section*{References}
 

@@ -56,7 +56,7 @@ def build_hourly_features(frame: pd.DataFrame, cfg: Config) -> pd.DataFrame:
 
     local = frame.index.tz_convert("Europe/Berlin")
     local_dates = pd.Index(local.date)
-    calendar_frame = calendar.calendar_features(local_dates, cfg.features.get("structural_breaks"))
+    calendar_frame = calendar.calendar_features(local_dates)
     calendar_frame.index = frame.index
     out = out.join(calendar_frame)
     out["hour"] = local.hour

@@ -49,55 +49,6 @@ warnings.simplefilter("ignore")
 KINDS = {"SARIMAX": "sarimax", "xgboost": "ml", "lightgbm": "ml", "random_forest": "ml"}
 
 
-def _validation_low_risk_decision(
-    cfg: Config,
-    operational_metrics: pd.DataFrame,
-    candidate_metrics: pd.DataFrame,
-    *,
-    protocol_fingerprint_value: str,
-    evidence_path: Path,
-) -> dict[str, object]:
-    """Persist one deterministic weather-candidate decision from validation only."""
-
-    criterion = "ensemble_MAPE"
-    baseline = float(operational_metrics.loc["ensemble", "MAPE"])
-    candidate = float(candidate_metrics.loc["ensemble", "MAPE"])
-    improvement = baseline - candidate
-    tie_threshold = 1e-12
-    integrity_checks = {
-        "selection_period_ends_at_validation_end": cfg.split.val_end.isoformat(),
-        "protocol_fingerprint_present": bool(protocol_fingerprint_value),
-        "no_final_outcomes_used": True,
-    }
-    accepted = improvement > tie_threshold and all(
-        value for key, value in integrity_checks.items() if key != "selection_period_ends_at_validation_end"
-    )
-    try:
-        evidence_reference = evidence_path.resolve().relative_to(Path(cfg.root).resolve()).as_posix()
-    except (AttributeError, ValueError):
-        evidence_reference = evidence_path.as_posix()
-    return {
-        "candidate": "persistence_weather",
-        "criterion": criterion,
-        "validation_period_start": (cfg.split.train_end + timedelta(days=1)).isoformat(),
-        "validation_period_end": cfg.split.val_end.isoformat(),
-        "validation_evidence_path": evidence_reference,
-        "protocol_fingerprint": protocol_fingerprint_value,
-        "baseline_metric": baseline,
-        "candidate_metric": candidate,
-        "deterministic_improvement": improvement,
-        "practical_tie_threshold": tie_threshold,
-        "integrity_checks": integrity_checks,
-        "selected_model": "ensemble",
-        "decision": "accepted" if accepted else "rejected",
-        "rationale": (
-            "Accepted because persistence weather improves validation MAPE beyond the practical tie threshold."
-            if accepted
-            else "Rejected because persistence weather does not improve validation MAPE beyond the practical tie threshold; preserve the configured model."
-        ),
-    }
-
-
 def _factory(kind: str, cfg: Config):
     model_cfg = cfg.models
     if kind == "SARIMAX":
@@ -408,28 +359,7 @@ def main() -> None:
         features={**cfg.features, "weather_strategy": "persistence"},
     )
     persistence_features = build_features(dataset, persistence_cfg)
-    persistence_validation_metrics, _ = _evaluate_period(
-        persistence_cfg,
-        persistence_features,
-        dataset,
-        validation_start,
-        cfg.split.val_end,
-        results_dir / "weather_ablation_validation_predictions",
-        metrics_dir / "persistence_weather_validation_metrics.csv",
-    )
-    decision = _validation_low_risk_decision(
-        cfg,
-        validation_metrics,
-        persistence_validation_metrics,
-        protocol_fingerprint_value=protocol_fingerprint(records["daily/ensemble"]),
-        evidence_path=metrics_dir / "persistence_weather_validation_metrics.csv",
-    )
-    (metrics_dir / "low_risk_improvement_decision.json").write_text(
-        json.dumps(decision, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-
-    # Retrospective weather differences remain descriptive only; selection never reads them.
+    # Persistence is descriptive weather ablation, not a model-selection candidate.
     persistence_metrics, _ = _evaluate_period(
         persistence_cfg,
         persistence_features,

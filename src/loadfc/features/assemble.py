@@ -20,8 +20,6 @@ _DERIVED = [
     "bridge_day",
     "pre_holiday",
     "post_holiday",
-    "is_covid",
-    "is_energy_crisis",
     "sin_1_week",
     "cos_1_week",
     "sin_1_year",
@@ -36,8 +34,6 @@ _EXOG = [
     "bridge_day",
     "pre_holiday",
     "post_holiday",
-    "is_covid",
-    "is_energy_crisis",
     "Temp_forecast",
     "Wind_forecast",
     "HDD",
@@ -79,7 +75,7 @@ def build_features(df: pd.DataFrame, cfg: Config) -> pd.DataFrame:
         cfg.split.train_end + timedelta(days=1),
     )
     feats = weather_features.add_temperature_anomaly(feats, climatology)
-    feats = feats.join(calendar.calendar_features(df.index, f.get("structural_breaks")))
+    feats = feats.join(calendar.calendar_features(df.index))
     for spec in f["fourier"]:
         feats = feats.join(
             fourier.fourier_terms(df.index, spec["period"], spec["name"], spec["harmonics"])

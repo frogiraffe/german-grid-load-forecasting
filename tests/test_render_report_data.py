@@ -122,17 +122,6 @@ def _write_report_inputs(root: Path) -> tuple[Path, Path]:
             for model in ("ensemble", "naive_1d", "seasonal_naive_7d")
         ]
     ).to_csv(metrics / "daily_comparison.csv", index=False)
-    (metrics / "low_risk_improvement_decision.json").write_text(
-        json.dumps(
-            {
-                "selected_model": "ensemble",
-                "decision": "accepted",
-                "protocol_fingerprint": fingerprints["daily/ensemble"],
-                "integrity_checks": {"no_final_outcomes_used": True},
-            }
-        )
-    )
-
     daily = pd.DataFrame(
         [
             {

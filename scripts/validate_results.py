@@ -708,55 +708,6 @@ def _check_reconciliation_artifacts(hourly: Path, records: dict[str, dict[str, o
     assert set(metrics["evaluation_period"]) == {"retrospective_final"}, metrics_path
 
 
-def _check_low_risk_decision(results: Path, records: dict[str, dict[str, object]]) -> None:
-    path = results / "metrics" / "low_risk_improvement_decision.json"
-    if not path.exists():
-        return
-    payload = json.loads(path.read_text())
-    required = {
-        "candidate",
-        "criterion",
-        "validation_period_start",
-        "validation_period_end",
-        "protocol_fingerprint",
-        "decision",
-        "rationale",
-        "validation_evidence_path",
-        "baseline_metric",
-        "candidate_metric",
-        "deterministic_improvement",
-        "practical_tie_threshold",
-        "integrity_checks",
-        "selected_model",
-    }
-    assert isinstance(payload, dict) and required <= set(payload), path
-    assert payload["decision"] in {"accepted", "rejected"}, path
-    assert payload["validation_period_start"] <= payload["validation_period_end"], path
-    assert "retrospective_final" not in json.dumps(payload, sort_keys=True).lower(), path
-    selected = records.get("daily/ensemble")
-    assert isinstance(selected, dict), path
-    assert payload["selected_model"] == "ensemble", path
-    validation_bounds = selected["splits"]["validation"]
-    assert [payload["validation_period_start"], payload["validation_period_end"]] == validation_bounds, path
-    fingerprint = str(payload["protocol_fingerprint"])
-    assert fingerprint == protocol_fingerprint(selected), path
-    evidence = Path(str(payload["validation_evidence_path"]))
-    if not evidence.is_absolute():
-        evidence = results.parent / evidence
-    assert evidence.resolve().is_relative_to(results.resolve().parent) and evidence.is_file(), path
-    evidence_frame = pd.read_csv(evidence)
-    if "evaluation_period" in evidence_frame:
-        assert evidence_frame["evaluation_period"].eq("validation").all(), path
-    if "protocol_fingerprint" in evidence_frame:
-        assert evidence_frame["protocol_fingerprint"].eq(fingerprint).all(), path
-    values = [payload[key] for key in ("baseline_metric", "candidate_metric", "deterministic_improvement", "practical_tie_threshold")]
-    assert all(isinstance(value, (int, float)) and math.isfinite(value) for value in values), path
-    assert math.isclose(payload["deterministic_improvement"], payload["baseline_metric"] - payload["candidate_metric"]), path
-    checks = payload["integrity_checks"]
-    assert isinstance(checks, dict) and checks.get("no_final_outcomes_used") is True, path
-    assert payload["rationale"], path
-
-
 def _finite_columns(frame: pd.DataFrame, columns: set[str], path: Path) -> None:
     values = frame[list(columns)].apply(pd.to_numeric, errors="coerce")
     assert values.notna().all().all() and np.isfinite(values.to_numpy()).all(), path
@@ -929,7 +880,6 @@ def validate_protocol_contract(
     _check_cqr_frame(cqr_calibration, hourly / "cqr_calibration_predictions.csv")
     _check_cqr_frame(cqr_final, hourly / "cqr_test_intervals.csv")
     _check_reconciliation_artifacts(hourly, records)
-    _check_low_risk_decision(results, records)
     _check_comparison_evidence(results, records)
     if any(value is not None for value in (calibration_start, calibration_end, final_start, final_end)):
         _check_hourly_predictions(

@@ -38,8 +38,6 @@ def test_build_features_has_full_contract():
         "bridge_day",
         "pre_holiday",
         "post_holiday",
-        "is_covid",
-        "is_energy_crisis",
         "sin_1_week",
         "cos_1_week",
         "sin_1_year",

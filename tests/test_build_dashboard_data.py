@@ -671,24 +671,6 @@ def _release_tree(tmp_path: Path) -> tuple[Path, Path, dict[str, dict[str, objec
         ],
     )
 
-    (results / "metrics/low_risk_improvement_decision.json").write_text(
-        json.dumps(
-            {
-                "candidate": "persistence_weather",
-                "criterion": "ensemble_MAPE",
-                "decision": "accepted",
-                "rationale": "validation-only improvement",
-                "selected_model": "ensemble",
-                "validation_period_start": "2024-01-01",
-                "validation_period_end": "2025-06-30",
-                "validation_evidence_path": (
-                    "results/metrics/persistence_weather_validation_metrics.csv"
-                ),
-                "integrity_checks": {"no_final_outcomes_used": True},
-            }
-        )
-    )
-
     identity = _release_identity(config_path, results, fingerprints, artifact_root=staging)
     summary = {
         "schema_version": 2,
@@ -823,7 +805,6 @@ def test_complete_dashboard_contract_is_bounded_and_uses_last_complete_week(
     assert payload["reconciliation"]["invariant"]["complete_local_days"] == 7
     assert payload["comparison"]["selection"]["selection_evidence_period"] == "validation"
     assert payload["comparison"]["bootstrap"][0]["practical_tie"] is True
-    assert payload["comparison"]["low_risk_decision"]["decision"] == "accepted"
     assert payload["protocol"]["periods"]["retrospective_final"] == [
         "2026-01-01",
         "2026-08-04",
@@ -833,6 +814,7 @@ def test_complete_dashboard_contract_is_bounded_and_uses_last_complete_week(
     )
     assert {item["kind"] for item in payload["limitations"]} == {
         "retrospective_final",
+        "hourly_forecast_definition",
         "weather_run_provenance",
         "adaptive_interval_scope",
     }

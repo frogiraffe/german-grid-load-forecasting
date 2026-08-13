@@ -87,43 +87,6 @@ def test_daily_protocol_records_reference_validation_evidence_only(monkeypatch):
     assert "test" not in records["daily/model"]["validation_selection_evidence"]
 
 
-def test_low_risk_decision_uses_validation_metrics_and_rejects_ties(tmp_path):
-    module = _module()
-    cfg = _cfg()
-    metrics = pd.DataFrame({"MAPE": [1.0]}, index=["ensemble"])
-    decision = module._validation_low_risk_decision(
-        cfg,
-        metrics,
-        metrics.copy(),
-        protocol_fingerprint_value="abc123",
-        evidence_path=tmp_path / "validation.csv",
-    )
-
-    assert decision["decision"] == "rejected"
-    assert decision["validation_period_end"] == "2024-01-02"
-    assert decision["selected_model"] == "ensemble"
-    assert decision["integrity_checks"]["no_final_outcomes_used"] is True
-    assert "retrospective_final" not in str(decision).lower()
-
-
-def test_low_risk_decision_accepts_deterministic_validation_improvement(tmp_path):
-    module = _module()
-    cfg = _cfg()
-    baseline = pd.DataFrame({"MAPE": [2.0]}, index=["ensemble"])
-    candidate = pd.DataFrame({"MAPE": [1.0]}, index=["ensemble"])
-
-    decision = module._validation_low_risk_decision(
-        cfg,
-        baseline,
-        candidate,
-        protocol_fingerprint_value="abc123",
-        evidence_path=tmp_path / "validation.csv",
-    )
-
-    assert decision["decision"] == "accepted"
-    assert decision["deterministic_improvement"] == 1.0
-
-
 def test_post_origin_weather_mutation_cannot_change_daily_selection(monkeypatch, tmp_path):
     module = _module()
     cfg = _cfg()
@@ -172,31 +135,3 @@ def test_post_origin_weather_mutation_cannot_change_daily_selection(monkeypatch,
             validation_evidence=tmp_path / "validation.csv",
         )["daily/model"]
     )
-
-
-def test_post_validation_outcomes_cannot_change_selection(tmp_path):
-    module = _module()
-    cfg = _cfg()
-    operational = pd.DataFrame({"MAPE": [2.0]}, index=["ensemble"])
-    candidate = pd.DataFrame({"MAPE": [1.0]}, index=["ensemble"])
-    retrospective = pd.DataFrame({"MAPE": [0.1]}, index=["ensemble"])
-
-    before = module._validation_low_risk_decision(
-        cfg,
-        operational,
-        candidate,
-        protocol_fingerprint_value="abc123",
-        evidence_path=tmp_path / "validation.csv",
-    )
-    retrospective.loc["ensemble", "MAPE"] = 99.0
-    after = module._validation_low_risk_decision(
-        cfg,
-        operational,
-        candidate,
-        protocol_fingerprint_value="abc123",
-        evidence_path=tmp_path / "validation.csv",
-    )
-
-    assert before == after
-    assert before["decision"] == "accepted"
-    assert before["integrity_checks"]["no_final_outcomes_used"] is True

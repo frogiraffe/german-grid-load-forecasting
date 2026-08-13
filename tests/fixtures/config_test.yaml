@@ -19,7 +19,6 @@ features:
   hdd_threshold: 18.0
   cdd_threshold: 22.0
   fourier: [ { name: "week", period: 7, harmonics: 1 } ]
-  structural_breaks: { is_covid: { start: "2020-03-15", end: "2020-06-15" } }
   lags: [1, 7]
 models: { sarimax: { order: [2,1,1], seasonal_order: [1,0,1,7], refit: false, refit_period: 90 } }
 ensemble: { members: ["SARIMAX", "xgboost", "lightgbm"] }

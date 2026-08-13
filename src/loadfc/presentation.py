@@ -20,11 +20,10 @@ TEX_START = "% loadfc:generated-start"
 TEX_END = "% loadfc:generated-end"
 MANAGED_PRESENTATION_PATHS = (
     Path("README.md"),
-    Path("docs/MODEL_CARD.md"),
-    Path("docs/TECHNICAL.md"),
     Path("report/technical-report-en.md"),
     Path("report/technical-report-en.tex"),
 )
+DAILY_PRESENTATION_MODEL = "ensemble"
 
 _DISPLAY_NAMES = {
     "xgboost": "XGBoost",
@@ -177,17 +176,7 @@ def load_presentation_values(results: Path) -> PresentationValues:
         raise ValueError(f"protocol manifest mixes source or config identities: {manifest_path}")
     source_revision, _ = manifest_identities.pop()
 
-    decision_path = results / "metrics/low_risk_improvement_decision.json"
-    decision = _read_json(decision_path)
-    daily_model = decision.get("selected_model")
-    checks = decision.get("integrity_checks")
-    if (
-        not isinstance(daily_model, str)
-        or decision.get("decision") not in {"accepted", "rejected"}
-        or not isinstance(checks, dict)
-        or checks.get("no_final_outcomes_used") is not True
-    ):
-        raise ValueError(f"invalid validation-only daily selection: {decision_path}")
+    daily_model = DAILY_PRESENTATION_MODEL
 
     daily_path = results / "metrics/daily_comparison.csv"
     daily = _read_csv(
@@ -429,7 +418,6 @@ def load_presentation_values(results: Path) -> PresentationValues:
         or selected_daily["end"] != final_end
         or selected_daily["stream_id"] != daily_stream
         or selected_daily["protocol_fingerprint"] != fingerprints[daily_stream]
-        or decision.get("protocol_fingerprint") != fingerprints[daily_stream]
         or selection["selection_protocol_fingerprint"] != fingerprints[hourly_stream]
     ):
         raise ValueError("daily presentation identity conflicts with canonical protocol")

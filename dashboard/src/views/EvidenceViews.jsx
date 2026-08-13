@@ -399,7 +399,6 @@ export function comparisonInterpretation(rows, i18n = english) {
 export function ComparisonView({ release }) {
   const selection = release.comparison.selection;
   const rows = release.comparison.bootstrap.map((row, index) => ({ ...row, id: index, comparison: `${formatModel(row.candidate)} vs ${formatModel(row.reference)}` }));
-  const decision = release.comparison.low_risk_decision;
   const interpretation = comparisonInterpretation(rows);
   return (
     <section id="comparison" data-evidence-section aria-labelledby="comparison-title">
@@ -419,7 +418,6 @@ export function ComparisonView({ release }) {
       >
         <ResponsiveContainer width="100%" height="100%"><BarChart data={rows} accessibilityLayer margin={{ top: 16, right: 20, bottom: 20, left: 16 }}><CartesianGrid {...grid} /><XAxis dataKey="comparison" {...axis} /><YAxis unit=" MW" {...axis} /><Tooltip contentStyle={tooltip} /><Legend verticalAlign="top" height={36} wrapperStyle={{ color: "var(--chart-legend)" }} /><ReferenceLine y={0} stroke="var(--chart-reference)" /><Bar name="MAE difference (MW)" dataKey="mae_difference" fill="var(--chart-comparison)" isAnimationActive={false} /></BarChart></ResponsiveContainer>
       </ChartFrame>
-      <p className="decision-record">Low-risk decision: <strong>{decision.decision === "accepted" ? "Accepted" : "Rejected"}</strong>. Criterion <code>{formatCriterion(decision.criterion)}</code>; {decision.rationale}.</p>
     </section>
   );
 }

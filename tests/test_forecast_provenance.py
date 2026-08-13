@@ -56,8 +56,6 @@ def test_daily_writer_keeps_provenance_out_of_model_features():
             "bridge_day": [0, 0],
             "pre_holiday": [0, 0],
             "post_holiday": [0, 0],
-            "is_covid": [0, 0],
-            "is_energy_crisis": [0, 0],
             "Temp_forecast": [5.0, 6.0],
             "Wind_forecast": [7.0, 8.0],
             "HDD": [13.0, 12.0],

@@ -18,9 +18,9 @@
 
 ## Abstract
 
-This study asks how accurately German electricity demand can be forecast one day ahead when every
-predictor is restricted to information available at forecast issue time. It compares statistical and
-tree-based daily models, three direct hourly architectures, daily–hourly reconciliation, and three
+This study asks how accurately German electricity demand can be forecast from a restricted
+forecast-origin information set. It compares one-day-ahead daily models, fixed 24-hour-ahead hourly
+forecasts, daily–hourly reconciliation, and three
 forms of uncertainty quantification. Model choice is fixed on a chronological validation period and
 a separate calibration period is used for interval construction. The final period is retrospective
 and was previously inspected; its results describe this experiment rather than future accuracy.
@@ -28,9 +28,9 @@ and was previously inspected; its results describe this experiment rather than f
 ## 1. Research question
 
 Retrospective load forecasts can look stronger than they are when they use weather observations that
-were unavailable at forecast time. The central question is therefore whether the next local day can
-be predicted from information available one day earlier. The analysis separately studies daily
-accuracy, hourly shape, the effect of reconciliation, model uncertainty, and interval calibration.
+were unavailable at forecast time. The analysis asks two related questions: how accurately the next
+daily mean can be predicted and how accurately each valid hour can be predicted exactly 24 hours
+earlier. The hourly result is not a common-origin profile for the next local day.
 
 ## 2. Data
 
@@ -55,8 +55,7 @@ point model.
 
 Daily candidates are SARIMAX, XGBoost, LightGBM, Random Forest, two persistence baselines, and a
 fixed ensemble of SARIMAX, XGBoost, and LightGBM. Predictors include one- and seven-day load lags,
-calendar effects, weekly and annual Fourier terms, forecast-origin weather, degree-day variables,
-and indicators for the COVID and energy-crisis periods.
+calendar effects, weekly and annual Fourier terms, forecast-origin weather, and degree-day variables.
 
 The hourly evaluation compares three models:
 
@@ -64,8 +63,9 @@ The hourly evaluation compares three models:
 - direct LightGBM;
 - direct Ridge.
 
-Each model predicts valid hours directly. The feature set includes horizon,
-lag-24, lag-168, calendar, weather, and Fourier terms.
+Each model predicts valid hours directly. The feature set includes horizon, lag-24, lag-168,
+calendar, weather, and Fourier terms. The released hourly metrics use horizon 24 only: the origin
+for each row is its own valid time minus 24 hours.
 
 The direct method prevents recursive error propagation. The lag features
 represent daily and weekly load patterns.
@@ -154,24 +154,15 @@ Pandera validates load and weather data.
 The evaluation process compares indexes before each join. It rejects missing
 or nonfinite interval bounds.
 
-## 10. Datetime calculation
-
-Pandas can store datetime values in nanoseconds or microseconds. Raw `.asi8`
-values depend on this storage unit.
-
-The feature code calculates hours with `pd.Timedelta(hours=1)`. The calculation
-produces the same scale for both storage units.
-
-A regression test uses `datetime64[us]`. It checks hourly increments and the
-weekly Fourier phase.
-
-## 11. Reproducibility
+## 10. Reproducibility
 
 Split dates, feature definitions, parameters, and the random seed are fixed in `config.yaml`. A clean
 run rebuilds public inputs, evaluates the frozen protocols, compiles the report, validates artifact
 hashes, and emits the bounded dashboard payload. Detailed CSV tables are generated on demand rather
 than stored in Git. Machine-readable source and protocol hashes remain in the result manifests; they
-do not belong in the scientific narrative.
+do not belong in the scientific narrative. Tree-model parameters are frozen legacy inputs. The
+complete historical search trials are unavailable, so the study is reproducible from the committed
+parameters onward but does not claim reproducibility of the original search.
 
 The verification commands are:
 
@@ -182,13 +173,16 @@ uv run pytest --cov=loadfc --cov-report=term-missing --cov-fail-under=80
 uv run python scripts/validate_results.py
 ```
 
-## 12. Limitations
+## 11. Limitations
 
 The final period was inspected during development, so its metrics are descriptive rather than
 prospective claims. The pre-2024 weather fallback is weaker than an archived issue-time forecast.
 
 Five population-weighted cities represent national weather exposure. Regional
 effects remain outside the model scope.
+
+The hourly headline is fixed 24-hour-ahead evaluation. It does not represent a market-style
+day-ahead profile issued once for all hours of the next local day.
 
 Conformal coverage can change during distribution shift.
 

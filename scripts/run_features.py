@@ -30,12 +30,6 @@ def main() -> None:
     print(f"features: {feats.shape[0]} rows x {feats.shape[1]} cols")
     print("columns:", list(feats.columns))
     print("holiday rows:", int(feats[["holiday_national", "holiday_religious"]].sum().sum()))
-    print(
-        "covid rows:",
-        int(feats["is_covid"].sum()),
-        "| energy-crisis rows:",
-        int(feats["is_energy_crisis"].sum()),
-    )
 
 
 if __name__ == "__main__":
