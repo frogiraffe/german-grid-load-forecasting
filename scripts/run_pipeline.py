@@ -88,7 +88,11 @@ def _prepare_staging(config_path: Path) -> tuple[Path, Path, Path, Path]:
             raise ValueError(f"release config path escapes staging root: {key}")
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.symlink_to((config_path.parent / relative).resolve(), target_is_directory=True)
-    for relative in (Path("docs/EVALUATION_LEDGER.md"), *_RELEASE_PRESENTATION_PATHS):
+    for relative in (
+        Path("docs/EVALUATION_LEDGER.md"),
+        Path("docs/TECHNICAL.md"),
+        *_RELEASE_PRESENTATION_PATHS,
+    ):
         source = config_path.parent / relative
         if source.is_file():
             destination = staging_root / relative

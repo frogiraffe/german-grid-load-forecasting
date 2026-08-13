@@ -74,6 +74,10 @@ def _repo(tmp_path: Path) -> Path:
         path = repo / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"previous {relative.as_posix()}\n")
+    for relative in (Path("docs/EVALUATION_LEDGER.md"), Path("docs/TECHNICAL.md")):
+        path = repo / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"static {relative.as_posix()}\n")
     (repo / ".gitignore").write_text("/results/\n")
     _git(
         repo,
