@@ -149,9 +149,8 @@ figcaption, .selection-status { color: var(--muted); font-size: 14px; }
 .chapter-figures { display: grid; gap: 24px; }
 .chapter-figure { min-width: 0; }
 .evidence-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 16px; padding: 16px; background: var(--surface); border-block: 1px solid var(--rule); }
-.invariant-row, .decision-record { padding: 16px; border: 1px solid var(--rule); }
+.invariant-row { padding: 16px; border: 1px solid var(--rule); }
 .invariant-row { color: var(--reconciliation); }
-.decision-record { border-left: 4px solid var(--comparison); }
 
 details { margin-top: 16px; }
 summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }

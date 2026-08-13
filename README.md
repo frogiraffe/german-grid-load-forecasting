@@ -82,11 +82,11 @@ earlier. It is not a common-origin day-ahead profile in which one issue time pro
 ### Release results
 
 - **Period:** 01 Jan 2026 to 04 Aug 2026; n=216 days.
-- **Daily forecast:** Ensemble. MAE 1003.6 MW, MAPE 1.867%, and MASE 0.445. Reference models: Naive (t-1) MAPE 7.025% (n=216); Seasonal naive (t-7) MAPE 5.575% (n=216).
-- **Hourly forecast:** Residual hybrid. Daily-total alignment reduced MAE from 1627.6 MW to 1557.7 MW (-4.30%). The result contains n=5183 hourly values. The daily model was LightGBM.
-- **Model comparison:** Validation MAE was 1465.3 MW for Residual hybrid and 1471.0 MW for Direct LightGBM. The paired difference on the final data was +1.9 MW. Its 95% range was [-48.8, 52.1] MW across 216 days. This range includes zero, so the data do not show a clear winner.
-- **Uncertainty ranges:** Symmetric 90%: target 90%, measured coverage 84.89%, mean width 5573.1 MW, interval score 8831.6 MW, n=5183; Adaptive 90%: target 90%, measured coverage 89.95%, mean width 6529.3 MW, interval score 8250.5 MW, n=5183; CQR 90%: target 90%, measured coverage 86.51%, mean width 7550.2 MW, interval score 10567.7 MW, n=5183.
-<!-- provenance: source `75bdc9e063dcd91625eb61cb084cc7c236494985`; daily protocol `6617bd74797ed102fb43d4c05e311d4752103aff13eb12cfbd0394cf859cc385`; hourly protocol `f766013085ed941324b3a97fd1806b9e30f59f04cf7692a1f43876151f3a9352`; bundle `4a9c208191dbc32dbcda36873b6c978df98754b8a79724279e0f4e6a86ba77bb` -->
+- **Daily forecast:** Ensemble. MAE 997.7 MW, MAPE 1.855%, and MASE 0.442. Reference models: Naive (t-1) MAPE 7.025% (n=216); Seasonal naive (t-7) MAPE 5.575% (n=216).
+- **Hourly forecast:** Residual hybrid. Daily-total alignment reduced MAE from 1624.9 MW to 1562.1 MW (-3.86%). The result contains n=5183 hourly values. The daily model was LightGBM.
+- **Model comparison:** Validation MAE was 1463.6 MW for Residual hybrid and 1466.6 MW for Direct LightGBM. The paired difference on the final data was +1.6 MW. Its 95% range was [-44.5, 46.7] MW across 216 days. This range includes zero, so the data do not show a clear winner.
+- **Uncertainty ranges:** Symmetric 90%: target 90%, measured coverage 85.18%, mean width 5612.0 MW, interval score 8837.3 MW, n=5183; Adaptive 90%: target 90%, measured coverage 89.95%, mean width 6545.0 MW, interval score 8273.5 MW, n=5183; CQR 90%: target 90%, measured coverage 86.67%, mean width 7556.4 MW, interval score 10519.8 MW, n=5183.
+<!-- provenance: source `e166beb21e3bc332989a73a0ee002f1fc5d05b70`; daily protocol `fed932e555077113ad2b8bba15935e0d02b4323dd2a6c8ece97e4d475c09bcb7`; hourly protocol `4ece152109b0d6e895aca13b2a4895fc799a564f6f307c36f184860854e0bfa1`; bundle `c5886267e46429d2e47ee218917d62c4037a49c6906dba6e7ea02c9a9886483e` -->
 - **Scope:** The final period was already examined. These results describe this data period and do not state future accuracy.
 <!-- loadfc:generated-end -->
 
