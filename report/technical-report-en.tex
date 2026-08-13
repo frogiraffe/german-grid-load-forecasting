@@ -220,11 +220,10 @@ Model & RMSE (MW) & MAE (MW) & MAPE (\%) & MASE\\
 \end{table}
 
 The ensemble produced the lowest final-period error: MAE \BestMAE{} MW, MAPE \BestMAPE{}, and
-MASE \BestMASE{}. Its MAPE was about 73\% below the previous-day baseline (7.025\%) and about 67\%
-below the weekly seasonal baseline (5.575\%). It also led on validation MAPE (1.993\%), so the
-reported choice is consistent with the selection period rather than being chosen from the final
-ranking. Ensemble MAPE changed from 1.993\% on validation to 1.867\% on the final period; this is
-reassuring for this sample but does not establish stability beyond August 2026.
+MASE \BestMASE{}. It substantially outperformed both naive baselines and also led validation MAPE,
+so the reported choice is consistent with the selection period rather than being chosen from the
+final ranking. Its final-period result is reassuring for this sample but does not establish stability
+beyond August 2026.
 
 \subsection{Hourly forecasts and reconciliation}
 
@@ -264,11 +263,11 @@ observed calibration--sharpness trade-off in this period without supplying a fut
 
 \subsection{Weather contribution and error structure}
 
-Replacing forecast-origin weather with a previous-day persistence proxy increased ensemble MAPE
-from 1.867\% to 1.901\%, a 0.034 percentage-point difference. Weather adds measurable value, but the
-small change shows that recent and seasonal load structure carries most of the signal at this
-national one-day horizon. Errors are not assumed independent across hours: model comparison uses
-day blocks, while interval and drift diagnostics retain monthly and horizon slices.
+Replacing forecast-origin weather with a previous-day persistence proxy modestly increased ensemble
+MAPE. Weather adds measurable value, but the small change shows that recent and seasonal load
+structure carries most of the signal at this national one-day horizon. Errors are not assumed
+independent across hours: model comparison uses day blocks, while interval and drift diagnostics
+retain monthly and horizon slices.
 
 \section{Data validation}
 

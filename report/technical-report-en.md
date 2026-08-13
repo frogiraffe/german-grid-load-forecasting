@@ -125,21 +125,18 @@ together with mean width and interval score, since coverage alone rewards arbitr
 
 ## 8. Results and interpretation
 
-The daily ensemble achieved 1,003.6 MW MAE, 1.867% MAPE, and 0.445 MASE on 216 final-period days.
-Its MAPE was about 73% below the previous-day baseline and about 67% below the weekly seasonal
-baseline. The ensemble also led validation MAPE at 1.993%, so the choice was not made from the final
-ranking.
+The generated results above show that the daily ensemble led both validation and final-period MAPE.
+It also substantially outperformed the previous-day and weekly seasonal baselines, so the reported
+choice follows the selection period rather than the final ranking.
 
-The residual hybrid was selected with reconciled validation MAE of 1,465.3 MW. Reconciliation
-reduced its final hourly MAE from 1,627.6 MW to 1,557.7 MW, a 4.30% improvement. Direct LightGBM
-finished slightly lower at 1,549.3 MW, but the paired day-block interval for the MAE difference was
-[-48.8, 52.1] MW. The data therefore do not establish a clear winner between the two hourly models.
+The residual hybrid was fixed from validation. Reconciliation lowered its final hourly MAE. Direct
+LightGBM finished slightly lower, but the paired day-block interval for their MAE difference crossed
+zero. The data therefore do not establish a clear winner between the two hourly models.
 
-For nominal 90% hourly intervals, fixed symmetric coverage was 84.89%, CQR coverage was 86.51%, and
-adaptive coverage was 89.95%. The adaptive method also had the lowest interval score, although it was
-wider than the fixed symmetric interval. Replacing forecast-origin weather with a previous-day proxy
-increased ensemble MAPE from 1.867% to 1.901%. Weather added measurable value, but recent and
-seasonal load structure carried most of the signal.
+For nominal 90% hourly intervals, the adaptive method came closest to nominal coverage and achieved
+the lowest interval score, although it was wider than the fixed symmetric interval. Replacing
+forecast-origin weather with a previous-day proxy modestly increased ensemble MAPE. Weather added
+measurable value, but recent and seasonal load structure carried most of the signal.
 
 ## 9. Data validation
 
