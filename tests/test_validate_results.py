@@ -84,8 +84,6 @@ def _presentation_tree(root, values: PresentationValues) -> None:
         "model",
         "role",
         "sample_size",
-        "bundle_missing",
-        "bundle_changed",
         "marker",
         "duplicate_marker",
         "prohibited_claim",
@@ -109,10 +107,6 @@ def test_managed_presentation_validator_rejects_drift_and_unqualified_claims(
         )
     elif mutation == "sample_size":
         text = text.replace("n=216", "n=999", 1)
-    elif mutation == "bundle_missing":
-        text = text.replace(f"; bundle `{values.bundle_fingerprint}`", "")
-    elif mutation == "bundle_changed":
-        text = text.replace(values.bundle_fingerprint, "c" * 64)
     elif mutation == "marker":
         text = text.replace("<!-- loadfc:generated-end -->", "")
     elif mutation == "duplicate_marker":

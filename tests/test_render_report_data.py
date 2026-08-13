@@ -336,6 +336,7 @@ def test_one_release_fixture_renders_the_same_results_across_report_and_readme(
 
     report = destination.read_text()
     readme = (tmp_path / "README.md").read_text()
+    tex = (tmp_path / "report/technical-report-en.tex").read_text()
     fingerprint = json.loads((tmp_path / "results/run_summary.json").read_text())[
         "bundle_fingerprint"
     ]
@@ -344,10 +345,12 @@ def test_one_release_fixture_renders_the_same_results_across_report_and_readme(
         "1500.0",
         "89.00",
         "5184",
-        "fixture-revision",
     ):
         assert expected in report
         assert expected in readme
+    assert "fixture-revision" in report
+    assert "<!-- provenance:" not in readme
+    assert "% provenance:" not in tex
     assert r"\newcommand{\FinalRole}{retrospective\_final}" in report
     assert r"\newcommand{\FinalStart}{2026-01-01}" in report
     assert r"\newcommand{\FinalEnd}{2026-08-04}" in report
@@ -360,7 +363,7 @@ def test_one_release_fixture_renders_the_same_results_across_report_and_readme(
     assert "prequential monitoring" not in readme
     for relative in MANAGED_PRESENTATION_PATHS:
         surface = (tmp_path / relative).read_text()
-        assert f"bundle `{fingerprint}`" in surface or f"bundle {fingerprint}" in surface
+        assert fingerprint not in surface
         assert surface.startswith("authored before\n")
         assert surface.endswith("\nauthored after\n")
         assert surface.count("loadfc:generated-start") == 1

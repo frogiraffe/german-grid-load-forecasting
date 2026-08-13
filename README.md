@@ -86,7 +86,6 @@ earlier. It is not a common-origin day-ahead profile in which one issue time pro
 - **Hourly forecast:** Residual hybrid. Daily-total alignment reduced MAE from 1624.9 MW to 1562.1 MW (-3.86%). The result contains n=5183 hourly values. The daily model was LightGBM.
 - **Model comparison:** Validation MAE was 1463.6 MW for Residual hybrid and 1466.6 MW for Direct LightGBM. The paired difference on the final data was +1.6 MW. Its 95% range was [-44.5, 46.7] MW across 216 days. This range includes zero, so the data do not show a clear winner.
 - **Uncertainty ranges:** Symmetric 90%: target 90%, measured coverage 85.18%, mean width 5612.0 MW, interval score 8837.3 MW, n=5183; Adaptive 90%: target 90%, measured coverage 89.95%, mean width 6545.0 MW, interval score 8273.5 MW, n=5183; CQR 90%: target 90%, measured coverage 86.67%, mean width 7556.4 MW, interval score 10519.8 MW, n=5183.
-<!-- provenance: source `e166beb21e3bc332989a73a0ee002f1fc5d05b70`; daily protocol `fed932e555077113ad2b8bba15935e0d02b4323dd2a6c8ece97e4d475c09bcb7`; hourly protocol `4ece152109b0d6e895aca13b2a4895fc799a564f6f307c36f184860854e0bfa1`; bundle `c5886267e46429d2e47ee218917d62c4037a49c6906dba6e7ea02c9a9886483e` -->
 - **Scope:** The final period was already examined. These results describe this data period and do not state future accuracy.
 <!-- loadfc:generated-end -->
 
